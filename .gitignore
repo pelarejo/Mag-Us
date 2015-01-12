@@ -26,3 +26,12 @@
 *.exe
 *.out
 *.app
+
+#Visual Studio
+*.suo
+
+#Unreal Engine
+/Binaries
+/DerivedDataCache
+/Intermediate
+/Saved
