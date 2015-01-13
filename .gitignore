@@ -27,10 +27,14 @@
 *.out
 *.app
 
-#Visual Studio
+# Visual Studio
 *.suo
+*.opensdf
+## Not Sure 
+*.sdf
+*.sln
 
-#Unreal Engine
+# Unreal Engine
 /Binaries
 /DerivedDataCache
 /Intermediate
