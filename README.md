@@ -20,5 +20,5 @@ Note: To open project in Visual Studio, go to File > Open Visual Studio in the U
 Follow the [recommended section] (https://docs.unrealengine.com/latest/INT/Programming/Development/VisualStudioSetup/index.html#recommendedsettings) to adapt your Visual Studio layout for Unreal Engine.
 
 ### Setting Up Unreal Engine for AZERTY
-[Follow the first answer] (https://answers.unrealengine.com/questions/16285/how-to-change-wasd-settings-in-editor.html).
-
+* [Follow the first answer] (https://answers.unrealengine.com/questions/16285/how-to-change-wasd-settings-in-editor.html).
+* **Or** import AzertyViewport.ini in Extra/ if you haven't changed any default editor keys yet. (Edit > Editor Preferences > Keyboard Shortcuts > Import...)
