@@ -50,6 +50,9 @@ protected:
 	/** Fires a projectile. */
 	void OnFire();
 
+	/** Locks on enemy */
+	void OnLock();
+
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 

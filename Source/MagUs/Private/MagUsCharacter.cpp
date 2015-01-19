@@ -54,6 +54,8 @@ void AMagUsCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AMagUsCharacter::OnFire);
 	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AMagUsCharacter::TouchStarted);
 
+	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsCharacter::OnLock);
+
 	InputComponent->BindAxis("MoveForward", this, &AMagUsCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AMagUsCharacter::MoveRight);
 	
@@ -139,4 +141,8 @@ void AMagUsCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMagUsCharacter::OnLock() {
+	UE_LOG(LogTemp, Warning, TEXT("Your message"));
 }
