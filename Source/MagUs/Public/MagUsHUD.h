@@ -14,9 +14,14 @@ public:
 	/** Primary draw call for the HUD */
 	virtual void DrawHUD() override;
 
+	void ResetDefaultCrosshairPosition();
+	void SetCrosshairPosition(FVector2D position);
+
 private:
 	/** Crosshair asset pointer */
 	class UTexture2D* CrosshairTex;
 
+	bool bUseDefaultCrosshairPosition;
+	FVector2D CrosshairDrawPosition;
 };
 
