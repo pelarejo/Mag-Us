@@ -42,7 +42,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimMontage* FireAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int32 LockDistance;
 protected:
+	AActor* LockedActor;
 
 	/** Handler for a touch input beginning. */
 	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
@@ -52,6 +55,7 @@ protected:
 
 	/** Locks on enemy */
 	void OnLock();
+	void OffLock();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);

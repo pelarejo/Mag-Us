@@ -4,7 +4,7 @@
 #include "MagUsCharacter.h"
 #include "MagUsProjectile.h"
 #include "Animation/AnimInstance.h"
-
+#include "Engine.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMagUsCharacter
@@ -36,6 +36,10 @@ AMagUsCharacter::AMagUsCharacter(const FObjectInitializer& ObjectInitializer)
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
 
+	// Default Lock Distance
+	LockDistance = 15000;
+
+	LockedActor = NULL;
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -55,6 +59,7 @@ void AMagUsCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AMagUsCharacter::TouchStarted);
 
 	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsCharacter::OnLock);
+	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsCharacter::OffLock);
 
 	InputComponent->BindAxis("MoveForward", this, &AMagUsCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AMagUsCharacter::MoveRight);
@@ -144,5 +149,24 @@ void AMagUsCharacter::LookUpAtRate(float Rate)
 }
 
 void AMagUsCharacter::OnLock() {
-	UE_LOG(LogTemp, Warning, TEXT("Your message"));
+	FHitResult OutHit = FHitResult(ForceInit);
+	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
+	FVector End = Start + (FirstPersonCameraComponent->GetForwardVector() * LockDistance);
+	FCollisionObjectQueryParams Pawns(ECC_Pawn);
+
+	FCollisionQueryParams TraceParams(FName(TEXT("Lock_Trace")), true, this);
+	TraceParams.bTraceAsyncScene = true;
+	TraceParams.bReturnPhysicalMaterial = false;
+
+	if (GetWorld()->LineTraceSingle(OutHit, Start, End, TraceParams, Pawns) == true) {
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Locking " + OutHit.GetActor()->GetName());
+			LockedActor = OutHit.GetActor();
+	}
+}
+
+void AMagUsCharacter::OffLock() {
+	if (LockedActor == NULL)
+		return;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Unlocking " + LockedActor->GetName());
+	LockedActor = NULL;
 }
