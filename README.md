@@ -22,3 +22,6 @@ Follow the [recommended section] (https://docs.unrealengine.com/latest/INT/Progr
 ### Setting Up Unreal Engine for AZERTY
 * [Follow the first answer] (https://answers.unrealengine.com/questions/16285/how-to-change-wasd-settings-in-editor.html).
 * **Or** import AzertyViewport.ini in Extra/ if you haven't changed any default editor keys yet. (Edit > Editor Preferences > Keyboard Shortcuts > Import...)
+
+###Important Links
+* [Coding Standard] (https://docs.unrealengine.com/latest/INT/Programming/Development/CodingStandard/index.html) for UE4
