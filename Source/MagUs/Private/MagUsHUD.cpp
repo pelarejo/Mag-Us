@@ -9,8 +9,8 @@
 AMagUsHUD::AMagUsHUD(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	// Set the crosshair texture
-	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshiarTexObj(TEXT("/Game/Textures/Crosshair"));
-	CrosshairTex = CrosshiarTexObj.Object;
+	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTexObj(TEXT("/Game/Textures/Crosshair"));
+	CrosshairTex = CrosshairTexObj.Object;
 }
 
 
