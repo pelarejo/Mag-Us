@@ -12,36 +12,42 @@ AMagUsHUD::AMagUsHUD(const FObjectInitializer& ObjectInitializer) : Super(Object
 	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTexObj(TEXT("/Game/Textures/Crosshair"));
 	CrosshairTex = CrosshairTexObj.Object;
 
-	bUseDefaultCrosshairPosition = true;
+	bUseLockedActorPosition = false;
 }
 
-/*
-** I had to use a boolean value because I couldn't use Canvas in constructor making saving
-** a default centered position for the crosshair impossible.
-*/
+#include "Engine.h"
+
 void AMagUsHUD::DrawHUD()
 {
 	Super::DrawHUD();
 
-	if (bUseDefaultCrosshairPosition == true) {
-		// find center of the Canvas
-		const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
-		// offset by half the texture's dimensions so that the center of the texture aligns with the center of the Canvas
-		CrosshairDrawPosition = FVector2D((Center.X - (CrosshairTex->GetSurfaceWidth() * 0.5)),
-											(Center.Y - (CrosshairTex->GetSurfaceHeight() * 0.5f)));
-	}
+	// find center of the Canvas
+	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
+	// offset by half the texture's dimensions so that the center of the texture aligns with the center of the Canvas
+	FVector2D CrosshairDrawPosition((Center.X - (CrosshairTex->GetSurfaceWidth() * 0.5f)),
+		(Center.Y - (CrosshairTex->GetSurfaceHeight() * 0.5f)));
 
+	if (bUseLockedActorPosition == true) {
+		FVector Projection = Canvas->Project(LockedActorPosition);
+		CrosshairDrawPosition.X = Projection.X;
+		CrosshairDrawPosition.Y = Projection.Y;
+	}
 	// draw the crosshair
 	FCanvasTileItem TileItem(CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
 	TileItem.BlendMode = SE_BLEND_Translucent;
-	Canvas->DrawItem( TileItem );
+	Canvas->DrawItem(TileItem);
 }
 
 void AMagUsHUD::ResetDefaultCrosshairPosition() {
-	bUseDefaultCrosshairPosition = true;
+	bUseLockedActorPosition = false;
 }
 
-void AMagUsHUD::SetCrosshairPosition(FVector2D position) {
-	bUseDefaultCrosshairPosition = false;
-	CrosshairDrawPosition = position;
+/**
+**
+*/
+void AMagUsHUD::SetCrosshairPosition(const FVector& Position) {
+	LockedActorPosition.X = Position.X;
+	LockedActorPosition.Y = Position.Y;
+	LockedActorPosition.Z = Position.Z;
+	bUseLockedActorPosition = true;
 }

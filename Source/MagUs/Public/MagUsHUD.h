@@ -15,13 +15,15 @@ public:
 	virtual void DrawHUD() override;
 
 	void ResetDefaultCrosshairPosition();
-	void SetCrosshairPosition(FVector2D position);
+	void SetCrosshairPosition(const FVector& Position);
+
+	void mytest(FVector& position);
 
 private:
 	/** Crosshair asset pointer */
 	class UTexture2D* CrosshairTex;
 
-	bool bUseDefaultCrosshairPosition;
-	FVector2D CrosshairDrawPosition;
+	bool bUseLockedActorPosition;
+	FVector LockedActorPosition;
 };
 

@@ -169,4 +169,21 @@ void AMagUsCharacter::OffLock() {
 		return;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Unlocking " + LockedActor->GetName());
 	LockedActor = NULL;
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	check(PC)
+		AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
+	check(CharacterHUD);
+	CharacterHUD->ResetDefaultCrosshairPosition();
+}
+
+void AMagUsCharacter::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
+
+	if (LockedActor != NULL) {
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		check(PC)
+			AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
+		check(CharacterHUD);
+		CharacterHUD->SetCrosshairPosition(LockedActor->GetActorLocation());
+	}
 }
