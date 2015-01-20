@@ -3,16 +3,17 @@
 #pragma once
 
 #include "GameFramework/Character.h"
-#include "Enemy.generated.h"
+#include "MagUsAI.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AEnemy : public ACharacter
+class MAGUS_API AMagUsAI : public ACharacter
 {
 	GENERATED_BODY()
-
-public:
-	AEnemy(const FObjectInitializer& ObjectInitializer);
+	
+	
+	
+	
 };
