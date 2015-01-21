@@ -54,7 +54,7 @@ void AMagUsCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	
+
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AMagUsCharacter::OnFire);
 	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AMagUsCharacter::TouchStarted);
 
@@ -63,7 +63,7 @@ void AMagUsCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 
 	InputComponent->BindAxis("MoveForward", this, &AMagUsCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AMagUsCharacter::MoveRight);
-	
+
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
@@ -97,11 +97,11 @@ void AMagUsCharacter::OnFire()
 	}
 
 	// try and play a firing animation if specified
-	if(FireAnimation != NULL)
+	if (FireAnimation != NULL)
 	{
 		// Get the animation object for the arms mesh
 		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if(AnimInstance != NULL)
+		if (AnimInstance != NULL)
 		{
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
@@ -159,8 +159,8 @@ void AMagUsCharacter::OnLock() {
 	TraceParams.bReturnPhysicalMaterial = false;
 
 	if (GetWorld()->LineTraceSingle(OutHit, Start, End, TraceParams, Pawns) == true) {
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Locking " + OutHit.GetActor()->GetName());
-			LockedActor = OutHit.GetActor();
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Locking " + OutHit.GetActor()->GetName());
+		LockedActor = OutHit.GetActor();
 	}
 }
 
@@ -170,8 +170,8 @@ void AMagUsCharacter::OffLock() {
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Unlocking " + LockedActor->GetName());
 	LockedActor = NULL;
 	APlayerController* PC = Cast<APlayerController>(GetController());
-	check(PC)
-		AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
+	check(PC);
+	AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
 	check(CharacterHUD);
 	CharacterHUD->ResetDefaultCrosshairPosition();
 }
@@ -181,8 +181,10 @@ void AMagUsCharacter::Tick(float DeltaSeconds) {
 
 	if (LockedActor != NULL) {
 		APlayerController* PC = Cast<APlayerController>(GetController());
-		check(PC)
-			AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
+		check(PC);
+		if (PC->LineOfSightTo(LockedActor) == false)
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Can not see");
+		AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
 		check(CharacterHUD);
 		CharacterHUD->SetCrosshairPosition(LockedActor->GetActorLocation());
 	}
