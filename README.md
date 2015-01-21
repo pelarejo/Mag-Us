@@ -4,6 +4,15 @@ It is a video game created as part of end year project at Epitech.
 
 It uses Unreal Engine 4.6.1 with Oculus Rift V2 and Leap Motion.
 
+Authors
+--------
+[parejo_p] (https://github.com/Py0s)
+lefebv_z
+lesaff_r
+loverg_c
+renaud_m
+virgo_b
+
 For Devs
 --------
 ### Installing Environment
