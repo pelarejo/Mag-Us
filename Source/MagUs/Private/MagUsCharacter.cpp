@@ -5,6 +5,7 @@
 #include "MagUsProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Engine.h"
+#include "math.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMagUsCharacter
@@ -158,7 +159,10 @@ void AMagUsCharacter::OnLock() {
 	TraceParams.bTraceAsyncScene = true;
 	TraceParams.bReturnPhysicalMaterial = false;
 
-	if (GetWorld()->LineTraceSingle(OutHit, Start, End, TraceParams, Pawns) == true) {
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	check(PC);
+	if (GetWorld()->LineTraceSingle(OutHit, Start, End, TraceParams, Pawns) == true
+		&& PC->LineOfSightTo(OutHit.GetActor()) == true) {
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Locking " + OutHit.GetActor()->GetName());
 		LockedActor = OutHit.GetActor();
 	}
@@ -176,16 +180,41 @@ void AMagUsCharacter::OffLock() {
 	CharacterHUD->ResetDefaultCrosshairPosition();
 }
 
+// Formula to know if player is in view. Not verry precise tho.
+// (GetWorld()->TimeSeconds - LockedActor->GetLastRenderTime()) <= DeltaSeconds + 0.01f)
 void AMagUsCharacter::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 
 	if (LockedActor != NULL) {
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		check(PC);
-		if (PC->LineOfSightTo(LockedActor) == false)
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Can not see");
-		AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
-		check(CharacterHUD);
-		CharacterHUD->SetCrosshairPosition(LockedActor->GetActorLocation());
+		// Detect if not hidden behind object and if actor still visible using 
+		if (PC->LineOfSightTo(LockedActor) == true
+			&& IsLockedActorInView(PC->PlayerCameraManager->GetFOVAngle())) {
+			// Move HUD
+			AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
+			check(CharacterHUD);
+			CharacterHUD->SetCrosshairPosition(LockedActor->GetActorLocation());
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Losing lock");
+			OffLock();
+		}
 	}
+}
+
+bool AMagUsCharacter::IsLockedActorInView(const float FOVAngle) {
+	// Detect if out of camera view using angle
+	check(FirstPersonCameraComponent);
+	if (LockedActor == NULL)
+		return false;
+
+	FVector PlayerToLockedActor(LockedActor->GetActorLocation() - FirstPersonCameraComponent->GetComponentLocation());
+	PlayerToLockedActor.Normalize();
+
+	const float dot = FVector::DotProduct(PlayerToLockedActor, FirstPersonCameraComponent->GetForwardVector());
+	const float LockedActorAngle = FMath::RadiansToDegrees(acos(dot));
+	if (LockedActorAngle > FOVAngle / 2)
+		return false;
+	return true;
 }

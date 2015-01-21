@@ -76,6 +76,8 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	bool IsLockedActorInView(const float FOVAngle);
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
