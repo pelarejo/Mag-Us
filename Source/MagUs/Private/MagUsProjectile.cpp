@@ -1,10 +1,12 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 
 #include "MagUs.h"
+#include "MagUsAICharacter.h"
 #include "MagUsProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Engine.h"
 
-AMagUsProjectile::AMagUsProjectile(const FObjectInitializer& ObjectInitializer) 
+AMagUsProjectile::AMagUsProjectile(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	// Use a sphere as a simple collision representation
@@ -38,6 +40,18 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+
+		// Try to damage character
+		AMagUsAICharacter* Character(Cast<AMagUsAICharacter>(OtherActor));
+		if (Character)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Damaging for 20.0 " + Character->GetName()));
+			}
+			FDamageEvent damageEvent;
+			Character->ApplyDamageMomentum(20.0f, damageEvent, this->Instigator, this);
+		}
 
 		Destroy();
 	}

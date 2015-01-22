@@ -86,8 +86,12 @@ void AMagUsCharacter::OnFire()
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = Instigator;
+
 			// spawn the projectile at the muzzle
-			World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+			World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 		}
 	}
 
