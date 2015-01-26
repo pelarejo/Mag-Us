@@ -76,7 +76,8 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	bool IsLockedActorInView(const float FOVAngle);
+	bool IsLockedActorInFrustum(const float FOVAngle, const float DeltaSeconds);
+	bool IsLockedActorWithinDistance();
 
 protected:
 	// APawn interface

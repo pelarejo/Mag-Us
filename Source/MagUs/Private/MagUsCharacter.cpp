@@ -186,17 +186,16 @@ void AMagUsCharacter::OffLock() {
 	CharacterHUD->ResetDefaultCrosshairPosition();
 }
 
-// Formula to know if player is in view. Not verry precise tho.
-// (GetWorld()->TimeSeconds - LockedActor->GetLastRenderTime()) <= DeltaSeconds + 0.01f)
 void AMagUsCharacter::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 
 	if (LockedActor != NULL) {
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		check(PC);
-		// Detect if not hidden behind object and if actor still visible using 
-		if (PC->LineOfSightTo(LockedActor) == true
-			&& IsLockedActorInView(PC->PlayerCameraManager->GetFOVAngle())) {
+		// Detect if Locked actor not hidden behind object, not too far and if still visible in frustum
+		if (PC->LineOfSightTo(LockedActor) == true			
+			&& IsLockedActorWithinDistance() == true
+			&& IsLockedActorInFrustum(PC->PlayerCameraManager->GetFOVAngle(), DeltaSeconds)) {
 			// Move HUD
 			AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
 			check(CharacterHUD);
@@ -209,8 +208,8 @@ void AMagUsCharacter::Tick(float DeltaSeconds) {
 	}
 }
 
-bool AMagUsCharacter::IsLockedActorInView(const float FOVAngle) {
-	// Detect if out of camera view using angle
+// Detect if out of camera view using angle && render time
+bool AMagUsCharacter::IsLockedActorInFrustum(const float FOVAngle, const float DeltaSeconds) {
 	check(FirstPersonCameraComponent);
 	if (LockedActor == NULL)
 		return false;
@@ -221,6 +220,18 @@ bool AMagUsCharacter::IsLockedActorInView(const float FOVAngle) {
 	const float dot = FVector::DotProduct(PlayerToLockedActor, FirstPersonCameraComponent->GetForwardVector());
 	const float LockedActorAngle = FMath::RadiansToDegrees(acos(dot));
 	if (LockedActorAngle > FOVAngle / 2)
+		return false;
+	if (!(GetWorld()->TimeSeconds - LockedActor->GetLastRenderTime() <= DeltaSeconds + 0.01f))
+		return false;
+	return true;
+}
+
+bool AMagUsCharacter::IsLockedActorWithinDistance() {
+	if (LockedActor == NULL)
+		return false;
+
+	FVector This_LockedActorVec = this->GetActorLocation() - LockedActor->GetActorLocation();
+	if (This_LockedActorVec.Size() > LockDistance)
 		return false;
 	return true;
 }
