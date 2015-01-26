@@ -34,3 +34,4 @@ Follow the [recommended section] (https://docs.unrealengine.com/latest/INT/Progr
 
 ###Important Links
 * [Coding Standard] (https://docs.unrealengine.com/latest/INT/Programming/Development/CodingStandard/index.html) for UE4
+* Useful [VR Template] (https://github.com/mitchemmc/UE4FirstPersonVRTemplate)
