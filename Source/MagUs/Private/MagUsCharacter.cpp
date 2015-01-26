@@ -79,18 +79,20 @@ void AMagUsCharacter::OnFire()
 	// try and fire a projectile
 	if (ProjectileClass != NULL)
 	{
-		const FRotator SpawnRotation = GetControlRotation();
-		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+		FRotator SpawnRotation = GetControlRotation();
+
+		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
 		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
 
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
+			// Set the instigator of the projectile
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			SpawnParams.Instigator = Instigator;
 
-			// spawn the projectile at the muzzle
+			// spawn the projectile
 			World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 		}
 	}

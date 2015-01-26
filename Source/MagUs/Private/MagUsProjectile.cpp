@@ -29,6 +29,7 @@ AMagUsProjectile::AMagUsProjectile(const FObjectInitializer& ObjectInitializer)
 	ProjectileMovement->MaxSpeed = 3000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
+	ProjectileMovement->ProjectileGravityScale = 0;
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
@@ -39,8 +40,6 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
 		// Try to damage character
 		AMagUsAICharacter* Character(Cast<AMagUsAICharacter>(OtherActor));
 		if (Character)
@@ -52,6 +51,8 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 			FDamageEvent damageEvent;
 			Character->ApplyDamageMomentum(20.0f, damageEvent, this->Instigator, this);
 		}
+		else
+			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 		Destroy();
 	}
