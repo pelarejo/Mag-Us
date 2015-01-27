@@ -39,3 +39,7 @@
 /DerivedDataCache
 /Intermediate
 /Saved
+
+# For leap-ue4
+*.pdb
+*.DS_Store
