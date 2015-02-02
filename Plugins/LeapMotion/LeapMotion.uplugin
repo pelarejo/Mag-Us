@@ -15,6 +15,7 @@
 		{
 			"Name" : "LeapMotion",
 			"Type" : "Runtime",
+			"LoadingPhase" : "PreDefault",
 			"WhitelistPlatforms" : [ "Win64", "Win32", "Mac" ]
 		}
 	]
