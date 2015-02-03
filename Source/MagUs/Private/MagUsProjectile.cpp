@@ -32,28 +32,29 @@ AMagUsProjectile::AMagUsProjectile(const FObjectInitializer& ObjectInitializer)
 	ProjectileMovement->ProjectileGravityScale = 0;
 
 	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
+	InitialLifeSpan = 1.0f;
 }
 
 void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor == NULL) || (OtherActor == this) || (OtherComp == NULL))
+		return;
+	
+	// Try to damage character
+	AMagUsAICharacter* Character(Cast<AMagUsAICharacter>(OtherActor));
+	if (Character)
 	{
-		// Try to damage character
-		AMagUsAICharacter* Character(Cast<AMagUsAICharacter>(OtherActor));
-		if (Character)
+		if (GEngine)
 		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Damaging for 20.0 " + Character->GetName()));
-			}
-			FDamageEvent damageEvent;
-			Character->ApplyDamageMomentum(20.0f, damageEvent, this->Instigator, this);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Damaging for 20.0 " + Character->GetName()));
 		}
-		else
+		FDamageEvent damageEvent;
+		Character->ApplyDamageMomentum(20.0f, damageEvent, this->Instigator, this);
+	}
+	// Only add impulse if we hit a physics
+	else if (OtherComp->IsSimulatingPhysics())
 			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
-		Destroy();
-	}
+	// Destroy projectile 
+	Destroy();
 }
