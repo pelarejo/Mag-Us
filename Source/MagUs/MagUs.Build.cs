@@ -7,5 +7,9 @@ public class MagUs : ModuleRules
 	public MagUs(TargetInfo Target)
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
-	}
+
+        PrivateDependencyModuleNames.AddRange(new string[] { "LeapMotion" });
+        PrivateIncludePathModuleNames.AddRange(new string[] { "LeapMotion" });
+        PrivateIncludePaths.AddRange(new string[] { "LeapMotion/Public" });
+    }
 }
