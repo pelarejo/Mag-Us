@@ -74,6 +74,14 @@ void AMagUsCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 	InputComponent->BindAxis("LookUpRate", this, &AMagUsCharacter::LookUpAtRate);
 }
 
+void AMagUsCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("OUCH, took " + FString::SanitizeFloat(DamageTaken) + " damages from " + PawnInstigator->GetName() + " with " + DamageCauser->GetName()));
+	}
+}
+
 void AMagUsCharacter::OnFire()
 {
 	// try and fire a projectile
