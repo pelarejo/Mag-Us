@@ -2,6 +2,7 @@
 
 #include "MagUs.h"
 #include "MagUsAICharacter.h"
+#include "MagUsCharacter.h"
 #include "MagUsProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine.h"
@@ -38,10 +39,15 @@ AMagUsProjectile::AMagUsProjectile(const FObjectInitializer& ObjectInitializer)
 void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if ((OtherActor == NULL) || (OtherActor == this) || (OtherComp == NULL))
+	{
+		Destroy();
 		return;
+	}
 	
 	// Try to damage character
-	AMagUsAICharacter* Character(Cast<AMagUsAICharacter>(OtherActor));
+	ACharacter* Character(Cast<AMagUsAICharacter>(OtherActor));	// Is Component an AI
+	if (!Character)
+		Character = (Cast<AMagUsCharacter>(OtherActor));		// Or is it the player
 	if (Character)
 	{
 		if (GEngine)

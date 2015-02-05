@@ -44,10 +44,12 @@ public:
 	class UAnimMontage* FireAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	int32 LockDistance;
+	int32 LockMaxDistance;
 
-	/** Apply damage to character */
-	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
+	/** This should be used for HMD confort */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 LockMinDistance;
+
 protected:
 	AActor* LockedActor;
 
@@ -60,7 +62,7 @@ protected:
 	/** Locks on enemy */
 	void OnLock();
 	void OffLock();
-
+	void InLock_Tick(float DeltaSeconds);
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 
@@ -88,10 +90,17 @@ protected:
 	// End of APawn interface
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void AddControllerYawInput(float Val) override;
 public:
 	/** Returns Mesh1P subobject **/
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+	/** Apply damage to character */
+	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
+
 };
 
