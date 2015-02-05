@@ -6,7 +6,6 @@
 #include "Animation/AnimInstance.h"
 #include "Engine.h"
 #include "math.h"
-#include "LeapEnums.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMagUsCharacter
@@ -267,4 +266,8 @@ bool AMagUsCharacter::IsLockedActorWithinDistance() {
 		return false;
 	}
 	return true;
+}
+
+void AMagUsCharacter::Killed(AActor* Someone) {
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, Someone->GetName());
 }

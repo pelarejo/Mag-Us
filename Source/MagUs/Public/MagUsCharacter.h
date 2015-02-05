@@ -102,5 +102,7 @@ public:
 	/** Apply damage to character */
 	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
 
+	virtual void Killed(AActor* Someone);
+
 };
 
