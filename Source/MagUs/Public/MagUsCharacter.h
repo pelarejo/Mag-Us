@@ -44,7 +44,10 @@ public:
 	class UAnimMontage* FireAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int32 LockDistance;
+	int32 LockDistance;
+
+	/** Apply damage to character */
+	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
 protected:
 	AActor* LockedActor;
 
