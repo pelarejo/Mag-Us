@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "Engine.h"
 #include "math.h"
+#include "LeapEnums.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMagUsCharacter
@@ -37,8 +38,9 @@ AMagUsCharacter::AMagUsCharacter(const FObjectInitializer& ObjectInitializer)
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
 
-	// Default Lock Distance
-	LockDistance = 15000;
+	// Default Lock Distance (Random values, they are set in BP)
+	LockMaxDistance = 15000;
+	LockMinDistance = 1000;
 
 	LockedActor = NULL;
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
@@ -136,10 +138,16 @@ void AMagUsCharacter::MoveForward(float Value)
 
 void AMagUsCharacter::MoveRight(float Value)
 {
-	if (Value != 0.0f)
-	{
+	if (Value != 0.0f) {
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
+	}
+}
+
+void AMagUsCharacter::AddControllerYawInput(float Val) {
+	//Disable manual rotation when in locked mode
+	if (LockedActor == NULL) {
+		Super::AddControllerYawInput(Val);
 	}
 }
 
@@ -158,7 +166,7 @@ void AMagUsCharacter::LookUpAtRate(float Rate)
 void AMagUsCharacter::OnLock() {
 	FHitResult OutHit = FHitResult(ForceInit);
 	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
-	FVector End = Start + (FirstPersonCameraComponent->GetForwardVector() * LockDistance);
+	FVector End = Start + (FirstPersonCameraComponent->GetForwardVector() * LockMaxDistance);
 	FCollisionObjectQueryParams Pawns(ECC_Pawn);
 
 	FCollisionQueryParams TraceParams(FName(TEXT("Lock_Trace")), true, this);
@@ -169,7 +177,7 @@ void AMagUsCharacter::OnLock() {
 	check(PC);
 	if (GetWorld()->LineTraceSingle(OutHit, Start, End, TraceParams, Pawns) == true
 		&& PC->LineOfSightTo(OutHit.GetActor()) == true) {
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Locking " + OutHit.GetActor()->GetName());
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Locking " + OutHit.GetActor()->GetName());
 		LockedActor = OutHit.GetActor();
 	}
 }
@@ -177,7 +185,7 @@ void AMagUsCharacter::OnLock() {
 void AMagUsCharacter::OffLock() {
 	if (LockedActor == NULL)
 		return;
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Unlocking " + LockedActor->GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Unlocking " + LockedActor->GetName());
 	LockedActor = NULL;
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	check(PC);
@@ -186,29 +194,38 @@ void AMagUsCharacter::OffLock() {
 	CharacterHUD->ResetDefaultCrosshairPosition();
 }
 
-void AMagUsCharacter::Tick(float DeltaSeconds) {
-	Super::Tick(DeltaSeconds);
+void AMagUsCharacter::InLock_Tick(float DeltaSeconds) {
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	check(PC);
+	// Detect if LockedActor not hidden behind object, not too far and still in frustum
+	if (LockedActor != NULL
+		&& PC->LineOfSightTo(LockedActor) == true
+		&& IsLockedActorWithinDistance() == true
+		&& IsLockedActorInFrustum(PC->PlayerCameraManager->GetFOVAngle(), DeltaSeconds)) {
+		// Move HUD
+		AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
+		check(CharacterHUD);
+		CharacterHUD->SetCrosshairPosition(LockedActor->GetActorLocation());
 
-	if (LockedActor != NULL) {
-		APlayerController* PC = Cast<APlayerController>(GetController());
-		check(PC);
-		// Detect if Locked actor not hidden behind object, not too far and if still visible in frustum
-		if (PC->LineOfSightTo(LockedActor) == true			
-			&& IsLockedActorWithinDistance() == true
-			&& IsLockedActorInFrustum(PC->PlayerCameraManager->GetFOVAngle(), DeltaSeconds)) {
-			// Move HUD
-			AMagUsHUD* CharacterHUD = Cast<AMagUsHUD>(PC->GetHUD());
-			check(CharacterHUD);
-			CharacterHUD->SetCrosshairPosition(LockedActor->GetActorLocation());
-		}
-		else {
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Losing lock");
-			OffLock();
-		}
+		// Face LockedActor
+		FRotator Rot = FRotationMatrix::MakeFromX(LockedActor->GetActorLocation() - this->GetActorLocation()).Rotator();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Rotating" + FString::SanitizeFloat(Rot.Yaw));
+		GetController()->SetControlRotation(Rot);
+	}
+	else {
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Losing lock");
+		OffLock();
 	}
 }
 
-// Detect if out of camera view using angle && render time
+void AMagUsCharacter::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
+	if (LockedActor != NULL) {
+		InLock_Tick(DeltaSeconds);
+	}
+}
+
+// Detect if out of camera view using angle && render time (* 2 for float margin of error)
 bool AMagUsCharacter::IsLockedActorInFrustum(const float FOVAngle, const float DeltaSeconds) {
 	check(FirstPersonCameraComponent);
 	if (LockedActor == NULL)
@@ -219,10 +236,15 @@ bool AMagUsCharacter::IsLockedActorInFrustum(const float FOVAngle, const float D
 
 	const float dot = FVector::DotProduct(PlayerToLockedActor, FirstPersonCameraComponent->GetForwardVector());
 	const float LockedActorAngle = FMath::RadiansToDegrees(acos(dot));
-	if (LockedActorAngle > FOVAngle / 2)
+	if (LockedActorAngle > FOVAngle / 2) {
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Angle Disconect");
 		return false;
-	if (!(GetWorld()->TimeSeconds - LockedActor->GetLastRenderTime() <= DeltaSeconds + 0.01f))
-		return false;
+	}
+	// Works on good pc but doesn't on weak laptop
+	//if (GetWorld()->TimeSeconds - LockedActor->GetLastRenderTime() > DeltaSeconds * 2) {
+	//	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Render Disconect");
+	//	return false;
+	//}
 	return true;
 }
 
@@ -231,7 +253,10 @@ bool AMagUsCharacter::IsLockedActorWithinDistance() {
 		return false;
 
 	FVector This_LockedActorVec = this->GetActorLocation() - LockedActor->GetActorLocation();
-	if (This_LockedActorVec.Size() > LockDistance)
+	if (This_LockedActorVec.Size() > LockMaxDistance
+		|| This_LockedActorVec.Size() < LockMinDistance) {
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Distance Disconect");
 		return false;
+	}
 	return true;
 }
