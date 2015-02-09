@@ -76,9 +76,6 @@ protected:
 protected:
 	AActor* LockedActor;
 
-	/** Handler for a touch input beginning. */
-	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
-
 	/** Fires a projectile. */
 	void OnFire();
 
@@ -103,6 +100,8 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
+
+	void TurnRateOrMoveRight(float Value);
 
 	bool IsLockedActorInFrustum(const float FOVAngle, const float DeltaSeconds);
 	bool IsLockedActorWithinDistance();

@@ -38,8 +38,8 @@ AMagUsCharacter::AMagUsCharacter(const FObjectInitializer& ObjectInitializer)
 	Mesh1P->CastShadow = false;
 
 	// Default Lock Distance (Random values, they are set in BP)
-	LockMaxDistance = 15000;
-	LockMinDistance = 1000;
+	LockMaxDistance = 2500;
+	LockMinDistance = 200;
 
 	LockedActor = NULL;
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
@@ -58,25 +58,26 @@ void AMagUsCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 	// set up gameplay key bindings
 	check(InputComponent);
 
+	// Actions
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AMagUsCharacter::OnFire);
-	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AMagUsCharacter::TouchStarted);
 
 	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsCharacter::OnLock);
 	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsCharacter::OffLock);
 
+	// Axis
 	InputComponent->BindAxis("MoveForward", this, &AMagUsCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AMagUsCharacter::MoveRight);
 
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	InputComponent->BindAxis("TurnRate", this, &AMagUsCharacter::TurnAtRate);
+	/// Mouse
+	InputComponent->BindAxis("Turn", this, &AMagUsCharacter::AddControllerYawInput);
 	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	/// Controller
+	InputComponent->BindAxis("TurnRate", this, &AMagUsCharacter::TurnAtRate);
 	InputComponent->BindAxis("LookUpRate", this, &AMagUsCharacter::LookUpAtRate);
+	InputComponent->BindAxis("TurnRateOrMoveRight", this, &AMagUsCharacter::TurnRateOrMoveRight);
 }
 
 void AMagUsCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
@@ -131,15 +132,6 @@ void AMagUsCharacter::OnFire()
 
 }
 
-void AMagUsCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	// only fire for first finger down
-	if (FingerIndex == 0)
-	{
-		OnFire();
-	}
-}
-
 void AMagUsCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)
@@ -174,6 +166,15 @@ void AMagUsCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMagUsCharacter::TurnRateOrMoveRight(float Value) {
+	if (LockedActor == NULL) {
+		TurnAtRate(Value);
+	}
+	else {
+		MoveRight(Value);
+	}
 }
 
 void AMagUsCharacter::OnLock() {
