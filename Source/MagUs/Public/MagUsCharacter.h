@@ -74,12 +74,17 @@ protected:
 	int32 Speed = 600;
 
 protected:
+	// LockedActor is linked to the in-game mode
 	AActor* LockedActor;
+	// bLockedPressed is linked to input
+	bool	bLockedPressed;
 
 	/** Fires a projectile. */
 	void OnFire();
 
 	/** Locks on enemy */
+	void LockPressed();
+	void LockReleased();
 	void OnLock();
 	void OffLock();
 	void InLock_Tick(float DeltaSeconds);

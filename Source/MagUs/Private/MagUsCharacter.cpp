@@ -42,6 +42,7 @@ AMagUsCharacter::AMagUsCharacter(const FObjectInitializer& ObjectInitializer)
 	LockMinDistance = 200;
 
 	LockedActor = NULL;
+	bLockedPressed = false;
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
@@ -64,8 +65,8 @@ void AMagUsCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AMagUsCharacter::OnFire);
 
-	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsCharacter::OnLock);
-	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsCharacter::OffLock);
+	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsCharacter::LockPressed);
+	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsCharacter::LockReleased);
 
 	// Axis
 	InputComponent->BindAxis("MoveForward", this, &AMagUsCharacter::MoveForward);
@@ -169,12 +170,22 @@ void AMagUsCharacter::LookUpAtRate(float Rate)
 }
 
 void AMagUsCharacter::TurnRateOrMoveRight(float Value) {
-	if (LockedActor == NULL) {
+	if (bLockedPressed == false) {
 		TurnAtRate(Value);
 	}
 	else {
 		MoveRight(Value);
 	}
+}
+
+void AMagUsCharacter::LockPressed() {
+	bLockedPressed = true;
+	OnLock();
+}
+
+void AMagUsCharacter::LockReleased() {
+	bLockedPressed = false;
+	OffLock();
 }
 
 void AMagUsCharacter::OnLock() {
