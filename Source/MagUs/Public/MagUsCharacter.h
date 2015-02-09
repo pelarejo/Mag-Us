@@ -16,6 +16,7 @@ class AMagUsCharacter : public ACharacter
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
+
 public:
 	AMagUsCharacter(const FObjectInitializer& ObjectInitializer);
 
@@ -49,6 +50,28 @@ public:
 	/** This should be used for HMD confort */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int32 LockMinDistance;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Health = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 MaxHealth = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Strength = 12;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Defense = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Regeneration = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	float RegenerationRate = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Speed = 600;
 
 protected:
 	AActor* LockedActor;
@@ -92,6 +115,7 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void AddControllerYawInput(float Val) override;
+
 public:
 	/** Returns Mesh1P subobject **/
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }

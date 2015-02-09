@@ -44,6 +44,10 @@ AMagUsCharacter::AMagUsCharacter(const FObjectInitializer& ObjectInitializer)
 	LockedActor = NULL;
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	// Change Speed of character
+	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
+	CharacterMovement->MaxWalkSpeed = Speed;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -102,7 +106,8 @@ void AMagUsCharacter::OnFire()
 			SpawnParams.Instigator = Instigator;
 
 			// spawn the projectile
-			World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+			Projectile->SetDamage(this->Strength);
 		}
 	}
 
