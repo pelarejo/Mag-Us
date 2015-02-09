@@ -1,10 +1,10 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "GameFramework/Actor.h"
+#include "MagUsSpell.h"
 #include "MagUsProjectile.generated.h"
 
 UCLASS(config=Game)
-class AMagUsProjectile : public AActor
+class AMagUsProjectile : public AMagUsSpell
 {
 	GENERATED_BODY()
 
