@@ -9,17 +9,12 @@ void AMagUsAICharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent cons
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("OUCH, took " + FString::SanitizeFloat(DamageTaken) + " damages from " + PawnInstigator->GetName() + " with " + DamageCauser->GetName()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("AI: " + FString::SanitizeFloat(DamageTaken) + "-" + FString::SanitizeFloat(Defense)));
 	}
-	this->Health -= DamageTaken;
+	this->Health -= (DamageTaken - Defense);
 
 	if (this->Health < 0)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("" + this->GetName() + " died"));
-		}
-
 		/** Check if the Instigator is the player then signal an AI is killed */
 		AMagUsCharacter *Player(Cast<AMagUsCharacter>(PawnInstigator));
 		if (Player)

@@ -83,8 +83,9 @@ void AMagUsCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent const&
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("OUCH, took " + FString::SanitizeFloat(DamageTaken) + " damages from " + PawnInstigator->GetName() + " with " + DamageCauser->GetName()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Player: " + FString::SanitizeFloat(DamageTaken) + " - " + FString::SanitizeFloat(Defense)));
 	}
+	Health -= (DamageTaken - Defense);
 }
 
 void AMagUsCharacter::OnFire()

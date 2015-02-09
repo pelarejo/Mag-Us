@@ -50,10 +50,6 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Character = (Cast<AMagUsCharacter>(OtherActor));		// Or is it the player
 	if (Character)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Damaging for " + FString::SanitizeFloat(this->Damage) + " " + Character->GetName()));
-		}
 		FDamageEvent damageEvent;
 		Character->ApplyDamageMomentum(this->Damage, damageEvent, this->Instigator, this);
 	}
