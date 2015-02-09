@@ -269,5 +269,7 @@ bool AMagUsCharacter::IsLockedActorWithinDistance() {
 }
 
 void AMagUsCharacter::Killed(AActor* Someone) {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, Someone->GetName());
+	if (Someone == LockedActor) {
+		OffLock();
+	}
 }
