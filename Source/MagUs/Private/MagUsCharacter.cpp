@@ -289,8 +289,10 @@ bool AMagUsCharacter::IsLockedActorWithinDistance() {
 }
 
 void AMagUsCharacter::Killed(AActor* Someone) {
-<<<<<<< HEAD
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, Someone->GetName());
+	if (Someone == LockedActor) {
+		OffLock();
+	}
 }
 
 
@@ -303,9 +305,3 @@ AMagUsCharacter::GestEnum AMagUsCharacter::getGestureType(FString gest)
 	else
 		return AMagUsCharacter::GestEnum::SWIPE;
 }
-=======
-	if (Someone == LockedActor) {
-		OffLock();
-	}
-}
->>>>>>> origin/master
