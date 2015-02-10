@@ -50,12 +50,8 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Character = (Cast<AMagUsCharacter>(OtherActor));		// Or is it the player
 	if (Character)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Damaging for 20.0 " + Character->GetName()));
-		}
 		FDamageEvent damageEvent;
-		Character->ApplyDamageMomentum(20.0f, damageEvent, this->Instigator, this);
+		Character->ApplyDamageMomentum(this->Damage, damageEvent, this->Instigator, this);
 	}
 	// Only add impulse if we hit a physics
 	else if (OtherComp->IsSimulatingPhysics())
@@ -63,4 +59,9 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 
 	// Destroy projectile 
 	Destroy();
+}
+
+void AMagUsProjectile::SetDamage(float damageAmount)
+{
+	Damage = damageAmount;
 }

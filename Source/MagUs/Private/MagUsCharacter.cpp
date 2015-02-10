@@ -1,11 +1,13 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 
 #include "MagUs.h"
+#include "LeapMotionPublicPCH.h"
 #include "MagUsCharacter.h"
 #include "MagUsProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Engine.h"
 #include "math.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 // AMagUsCharacter
@@ -38,12 +40,17 @@ AMagUsCharacter::AMagUsCharacter(const FObjectInitializer& ObjectInitializer)
 	Mesh1P->CastShadow = false;
 
 	// Default Lock Distance (Random values, they are set in BP)
-	LockMaxDistance = 15000;
-	LockMinDistance = 1000;
+	LockMaxDistance = 2500;
+	LockMinDistance = 200;
 
 	LockedActor = NULL;
+	bLockedPressed = false;
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	// Change Speed of character
+	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
+	CharacterMovement->MaxWalkSpeed = Speed;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -54,33 +61,35 @@ void AMagUsCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 	// set up gameplay key bindings
 	check(InputComponent);
 
+	// Actions
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AMagUsCharacter::OnFire);
-	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AMagUsCharacter::TouchStarted);
 
-	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsCharacter::OnLock);
-	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsCharacter::OffLock);
+	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsCharacter::LockPressed);
+	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsCharacter::LockReleased);
 
+	// Axis
 	InputComponent->BindAxis("MoveForward", this, &AMagUsCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AMagUsCharacter::MoveRight);
 
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	InputComponent->BindAxis("TurnRate", this, &AMagUsCharacter::TurnAtRate);
+	/// Mouse
+	InputComponent->BindAxis("Turn", this, &AMagUsCharacter::AddControllerYawInput);
 	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	/// Controller
+	InputComponent->BindAxis("TurnRate", this, &AMagUsCharacter::TurnAtRate);
 	InputComponent->BindAxis("LookUpRate", this, &AMagUsCharacter::LookUpAtRate);
+	InputComponent->BindAxis("TurnRateOrMoveRight", this, &AMagUsCharacter::TurnRateOrMoveRight);
 }
 
 void AMagUsCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("OUCH, took " + FString::SanitizeFloat(DamageTaken) + " damages from " + PawnInstigator->GetName() + " with " + DamageCauser->GetName()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Player: " + FString::SanitizeFloat(DamageTaken) + " - " + FString::SanitizeFloat(Defense)));
 	}
+	Health -= (DamageTaken - Defense);
 }
 
 void AMagUsCharacter::OnFire()
@@ -102,7 +111,8 @@ void AMagUsCharacter::OnFire()
 			SpawnParams.Instigator = Instigator;
 
 			// spawn the projectile
-			World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+			Projectile->SetDamage(this->Strength);
 		}
 	}
 
@@ -123,15 +133,6 @@ void AMagUsCharacter::OnFire()
 		}
 	}
 
-}
-
-void AMagUsCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	// only fire for first finger down
-	if (FingerIndex == 0)
-	{
-		OnFire();
-	}
 }
 
 void AMagUsCharacter::MoveForward(float Value)
@@ -168,6 +169,25 @@ void AMagUsCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMagUsCharacter::TurnRateOrMoveRight(float Value) {
+	if (bLockedPressed == false) {
+		TurnAtRate(Value);
+	}
+	else {
+		MoveRight(Value);
+	}
+}
+
+void AMagUsCharacter::LockPressed() {
+	bLockedPressed = true;
+	OnLock();
+}
+
+void AMagUsCharacter::LockReleased() {
+	bLockedPressed = false;
+	OffLock();
 }
 
 void AMagUsCharacter::OnLock() {
@@ -269,5 +289,23 @@ bool AMagUsCharacter::IsLockedActorWithinDistance() {
 }
 
 void AMagUsCharacter::Killed(AActor* Someone) {
+<<<<<<< HEAD
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, Someone->GetName());
 }
+
+
+AMagUsCharacter::GestEnum AMagUsCharacter::getGestureType(FString gest)
+{
+	if (gest == "Circle")
+		return AMagUsCharacter::GestEnum::CIRCLE;
+	else if (gest == "KeyTap")
+		return AMagUsCharacter::GestEnum::KEYTAP;
+	else
+		return AMagUsCharacter::GestEnum::SWIPE;
+}
+=======
+	if (Someone == LockedActor) {
+		OffLock();
+	}
+}
+>>>>>>> origin/master

@@ -17,8 +17,6 @@ public:
 	void ResetDefaultCrosshairPosition();
 	void SetCrosshairPosition(const FVector& Position);
 
-	void mytest(FVector& position);
-
 private:
 	/** Crosshair asset pointer */
 	class UTexture2D* CrosshairTex;

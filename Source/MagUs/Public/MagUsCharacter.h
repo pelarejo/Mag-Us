@@ -2,12 +2,17 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "MagUsHUD.h"
+#include "LeapMotionPublicPCH.h"
+#include <iostream>
 #include "MagUsCharacter.generated.h"
 
 UCLASS(config=Game)
 class AMagUsCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+
+	
 
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
@@ -16,8 +21,19 @@ class AMagUsCharacter : public ACharacter
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
+
 public:
 	AMagUsCharacter(const FObjectInitializer& ObjectInitializer);
+
+	/* Gesture enum */
+	UENUM(BlueprintType)		//"BlueprintType" is essential to include
+	enum class GestEnum
+	{
+		CIRCLE,
+		SWIPE,
+		KEYTAP
+	};
+
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -51,18 +67,47 @@ public:
 	int32 LockMinDistance;
 
 protected:
-	AActor* LockedActor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Health = 100;
 
-	/** Handler for a touch input beginning. */
-	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 MaxHealth = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Strength = 12;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Defense = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Regeneration = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	float RegenerationRate = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	int32 Speed = 600;
+
+protected:
+	// LockedActor is linked to the in-game mode
+	AActor* LockedActor;
+	// bLockedPressed is linked to input
+	bool	bLockedPressed;
 
 	/** Fires a projectile. */
 	void OnFire();
 
 	/** Locks on enemy */
+	void LockPressed();
+	void LockReleased();
 	void OnLock();
 	void OffLock();
 	void InLock_Tick(float DeltaSeconds);
+
+	/** Get gesture type **/
+	UFUNCTION(BlueprintCallable, Category = "SpellManagement")
+	GestEnum getGestureType(FString gest);
+
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 
@@ -81,6 +126,8 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	void TurnRateOrMoveRight(float Value);
+
 	bool IsLockedActorInFrustum(const float FOVAngle, const float DeltaSeconds);
 	bool IsLockedActorWithinDistance();
 
@@ -92,6 +139,7 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void AddControllerYawInput(float Val) override;
+
 public:
 	/** Returns Mesh1P subobject **/
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }

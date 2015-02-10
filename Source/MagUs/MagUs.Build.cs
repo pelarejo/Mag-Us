@@ -10,6 +10,6 @@ public class MagUs : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[] { "LeapMotion" });
         PrivateIncludePathModuleNames.AddRange(new string[] { "LeapMotion" });
-        PrivateIncludePaths.AddRange(new string[] { "LeapMotion/Public" });
+        PrivateIncludePaths.AddRange(new string[] { "LeapMotion/Public", "LeapMotion/Private" });
     }
 }
