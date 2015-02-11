@@ -15,6 +15,8 @@ AMagUsHUD::AMagUsHUD(const FObjectInitializer& ObjectInitializer) : Super(Object
 	bUseLockedActorPosition = false;
 }
 
+#include "Engine.h"
+
 void AMagUsHUD::DrawHUD()
 {
 	Super::DrawHUD();
