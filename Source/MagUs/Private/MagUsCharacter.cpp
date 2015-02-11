@@ -296,12 +296,20 @@ void AMagUsCharacter::Killed(AActor* Someone) {
 }
 
 
-AMagUsCharacter::GestEnum AMagUsCharacter::getGestureType(FString gest)
+GestEnum AMagUsCharacter::getGestureType(FString gest)
 {
-	if (gest == "Circle")
-		return AMagUsCharacter::GestEnum::CIRCLE;
-	else if (gest == "KeyTap")
-		return AMagUsCharacter::GestEnum::KEYTAP;
-	else
-		return AMagUsCharacter::GestEnum::SWIPE;
+	if ((this->last - clock()) / CLOCKS_PER_SEC < -1)
+	{
+		this->last = clock();
+		if (gest == "Circle")
+		{
+			this->OnFire();
+			return GestEnum::CIRCLE;
+		}
+		else if (gest == "KeyTap")
+			return GestEnum::KEYTAP;
+		else
+			return GestEnum::SWIPE;
+	}
+	return (GestEnum::SWIPE);
 }

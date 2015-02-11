@@ -3,8 +3,17 @@
 #include "GameFramework/Character.h"
 #include "MagUsHUD.h"
 #include "LeapMotionPublicPCH.h"
+#include <ctime>
 #include <iostream>
 #include "MagUsCharacter.generated.h"
+
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
+enum class GestEnum
+{
+	CIRCLE,
+	SWIPE,
+	KEYTAP
+};
 
 UCLASS(config=Game)
 class AMagUsCharacter : public ACharacter
@@ -26,13 +35,7 @@ public:
 	AMagUsCharacter(const FObjectInitializer& ObjectInitializer);
 
 	/* Gesture enum */
-	UENUM(BlueprintType)		//"BlueprintType" is essential to include
-	enum class GestEnum
-	{
-		CIRCLE,
-		SWIPE,
-		KEYTAP
-	};
+
 
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -87,6 +90,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int32 Speed = 600;
+
+	clock_t last = clock();
 
 protected:
 	// LockedActor is linked to the in-game mode
