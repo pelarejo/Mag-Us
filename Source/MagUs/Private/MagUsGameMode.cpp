@@ -4,6 +4,7 @@
 #include "MagUsGameMode.h"
 #include "MagUsHUD.h"
 #include "MagUsCharacter.h"
+#include "MagUsPlayerController.h"
 
 AMagUsGameMode::AMagUsGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -14,4 +15,7 @@ AMagUsGameMode::AMagUsGameMode(const FObjectInitializer& ObjectInitializer)
 
 	// use our custom HUD class
 	HUDClass = AMagUsHUD::StaticClass();
+
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassFinder(TEXT("/Game/Blueprints/MagUsController_BP"));
+	PlayerControllerClass = PlayerControllerClassFinder.Class;
 }
