@@ -13,6 +13,14 @@ class MAGUS_API AMagUsAICharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+public:
+	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
+
+protected:
+	/** Fires a projectile. */
+	UFUNCTION(BlueprintCallable, Category = SpellManagement)
+	void OnFire();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int32 Health = 100;
@@ -34,7 +42,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int32 Speed = 600;
-
-public:
-	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
 };
