@@ -18,5 +18,10 @@ class AMagUsCharacter : public ACharacter
 
 public:
 	AMagUsCharacter(const FObjectInitializer& ObjectInitializer);
+
+protected:
+	/** Projectile class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category = Test)
+	TSubclassOf<class AMagUsProjectile> ProjectileArray[4];
 };
 
