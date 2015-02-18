@@ -1,15 +1,13 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "GameFramework/Character.h"
+#include "MagUsCharacter.h"
 #include "MagUsHUD.h"
 #include "LeapMotionPublicPCH.h"
 #include <ctime>
-#include <iostream>
-#include "MagUsCharacter.h" // For enum
 #include "MagUsPlayerCharacter.generated.h"
 
 UCLASS(config=Game)
-class AMagUsPlayerCharacter : public ACharacter
+class AMagUsPlayerCharacter : public AMagUsCharacter
 {
 	GENERATED_BODY()
 

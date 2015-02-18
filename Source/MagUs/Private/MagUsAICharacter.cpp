@@ -2,7 +2,7 @@
 
 #include "MagUs.h"
 #include "MagUsAICharacter.h"
-#include "MagUsCharacter.h"
+#include "MagUsPlayerCharacter.h"
 #include "Engine.h"
 
 void AMagUsAICharacter::OnFire()
@@ -61,7 +61,7 @@ void AMagUsAICharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent cons
 	if (this->Health < 0)
 	{
 		/** Check if the Instigator is the player then signal an AI is killed */
-		AMagUsCharacter *Player(Cast<AMagUsCharacter>(PawnInstigator));
+		AMagUsPlayerCharacter *Player(Cast<AMagUsPlayerCharacter>(PawnInstigator));
 		if (Player)
 			Player->Killed(this);
 

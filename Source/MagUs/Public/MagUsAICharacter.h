@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "GameFramework/Character.h"
+#include "MagUsCharacter.h"
 #include "MagUsAICharacter.generated.h"
 
 /**
  * 
  */
 UCLASS(config = Game)
-class MAGUS_API AMagUsAICharacter : public ACharacter
+class MAGUS_API AMagUsAICharacter : public AMagUsCharacter
 {
 	GENERATED_BODY()
 
