@@ -120,6 +120,8 @@ protected:
 	bool IsLockedActorInFrustum(const float FOVAngle, const float DeltaSeconds);
 	bool IsLockedActorWithinDistance();
 
+	void ResetHMD();
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
