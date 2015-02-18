@@ -304,21 +304,35 @@ void AMagUsPlayerCharacter::Killed(AActor* Someone) {
 	}
 }
 
+void AMagUsPlayerCharacter::RefreshCanAttack()
+{
+	this->canAttack = true;
+}
 
 GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 {
-	if ((this->last - clock()) / CLOCKS_PER_SEC < -1)
+	if (this->canAttack == true)
 	{
-		this->last = clock();
+		GetWorldTimerManager().SetTimer(this, &AMagUsPlayerCharacter::RefreshCanAttack, 0.2f, true);
+		this->canAttack = false;
 		if (gest == "Circle")
 		{
+			this->spellType = GestEnum::CIRCLE;
 			this->OnFire();
 			return GestEnum::CIRCLE;
 		}
 		else if (gest == "KeyTap")
+		{
+			this->spellType = GestEnum::KEYTAP;
+			this->OnFire();
 			return GestEnum::KEYTAP;
+		}
 		else
+		{
+			this->spellType = GestEnum::SWIPE;
+			this->OnFire();
 			return GestEnum::SWIPE;
+		}
 	}
-	return (GestEnum::SWIPE);
+	return (GestEnum::NONE);
 }

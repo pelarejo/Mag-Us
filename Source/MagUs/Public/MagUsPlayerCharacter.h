@@ -76,6 +76,8 @@ protected:
 	int32 Speed = 600;
 
 	clock_t last = clock();
+	bool canAttack;
+	GestEnum spellType;
 
 protected:
 	// LockedActor is linked to the in-game mode
@@ -96,6 +98,8 @@ protected:
 	/** Get gesture type **/
 	UFUNCTION(BlueprintCallable, Category = "SpellManagement")
 	GestEnum getGestureType(FString gest);
+
+	void RefreshCanAttack();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
