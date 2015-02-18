@@ -2,16 +2,24 @@
 
 #pragma once
 
-#include "GameFramework/Character.h"
+#include "MagUsCharacter.h"
 #include "MagUsAICharacter.generated.h"
 
 /**
  * 
  */
 UCLASS(config = Game)
-class MAGUS_API AMagUsAICharacter : public ACharacter
+class MAGUS_API AMagUsAICharacter : public AMagUsCharacter
 {
 	GENERATED_BODY()
+
+public:
+	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
+
+protected:
+	/** Fires a projectile. */
+	UFUNCTION(BlueprintCallable, Category = SpellManagement)
+	void OnFire();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -34,7 +42,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int32 Speed = 600;
-
-public:
-	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
 };
