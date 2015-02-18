@@ -26,5 +26,42 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = SpellManagement)
 	TSubclassOf<class AMagUsProjectile> ProjectileArray[4];
 
+	/** Location for projectiles to spawn */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	FVector ProjectileOffset;
+
+	/** Projectile class to spawn (Will be remplaced by ProjectileArray) */
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<class AMagUsProjectile> ProjectileClass;
+
+	/** Sound to play each time we fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	class USoundBase* FireSound;
+
+	/** AnimMontage to play each time we fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	class UAnimMontage* FireAnimation;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int32 Health = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int32 MaxHealth = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int32 Strength = 12;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int32 Defense = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int32 Regeneration = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		float RegenerationRate = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int32 Speed = 600;
 };
 

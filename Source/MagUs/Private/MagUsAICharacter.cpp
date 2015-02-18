@@ -2,21 +2,25 @@
 
 #include "MagUs.h"
 #include "MagUsAICharacter.h"
+#include "MagUsProjectile.h"
 #include "MagUsPlayerCharacter.h"
 #include "Engine.h"
 
+AMagUsAICharacter::AMagUsAICharacter(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
+{
+	ProjectileOffset = FVector(40.0f, 0.0f, 0.0f);
+}
+
 void AMagUsAICharacter::OnFire()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fire"));
-	/*
 	// try and fire a projectile
 	if (ProjectileClass != NULL)
 	{
 		FRotator SpawnRotation = GetControlRotation();
 
 		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
-		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
+		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
 
 		UWorld* const World = GetWorld();
 		if (World != NULL)
@@ -31,7 +35,7 @@ void AMagUsAICharacter::OnFire()
 			Projectile->SetDamage(this->Strength);
 		}
 	}
-
+	/*
 	// try and play the sound if specified
 	if (FireSound != NULL)
 	{
