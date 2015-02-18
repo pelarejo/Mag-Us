@@ -7,7 +7,7 @@
 #include "Animation/AnimInstance.h"
 #include "Engine.h"
 #include "math.h"
-
+#include "HeadMountedDisplay.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMagUsPlayerCharacter
@@ -69,6 +69,8 @@ void AMagUsPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Inp
 
 	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsPlayerCharacter::LockPressed);
 	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsPlayerCharacter::LockReleased);
+
+	InputComponent->BindAction("ResetHMDPosition", IE_Pressed, this, &AMagUsPlayerCharacter::ResetHMD);
 
 	// Axis
 	InputComponent->BindAxis("MoveForward", this, &AMagUsPlayerCharacter::MoveForward);
@@ -177,6 +179,13 @@ void AMagUsPlayerCharacter::TurnRateOrMoveRight(float Value) {
 	}
 	else {
 		MoveRight(Value);
+	}
+}
+
+void AMagUsPlayerCharacter::ResetHMD() {
+	if (GEngine->HMDDevice.IsValid() && GEngine->IsStereoscopic3D())
+	{
+		GEngine->HMDDevice->ResetOrientationAndPosition(0.0f);
 	}
 }
 
