@@ -8,12 +8,13 @@ class AMagUsProjectile : public AMagUsSpell
 {
 	GENERATED_BODY()
 
+protected:
 	/** Sphere collision component */
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	class USphereComponent* CollisionComp;
 
 	/** Projectile movement component */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "false"))
 	class UProjectileMovementComponent* ProjectileMovement;
 
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)

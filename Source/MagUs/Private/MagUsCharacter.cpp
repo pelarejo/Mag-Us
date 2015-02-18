@@ -4,6 +4,7 @@
 #include "LeapMotionPublicPCH.h"
 #include "MagUsCharacter.h"
 #include "MagUsProjectile.h"
+#include "MagUsFireball.h"
 #include "Animation/AnimInstance.h"
 #include "Engine.h"
 #include "math.h"
@@ -94,27 +95,91 @@ void AMagUsCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent const&
 
 void AMagUsCharacter::OnFire()
 {
-	// try and fire a projectile
-	if (ProjectileClass != NULL)
+
+	if (this->spellType == GestEnum::CIRCLE)
 	{
-		FRotator SpawnRotation = GetControlRotation();
-
-		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
-		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
-
-		UWorld* const World = GetWorld();
-		if (World != NULL)
+		// try and fire a projectile
+		if (ProjectileClass != NULL)
 		{
-			// Set the instigator of the projectile
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = Instigator;
+			FRotator SpawnRotation = GetControlRotation();
 
-			// spawn the projectile
-			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
-			Projectile->SetDamage(this->Strength);
+			// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
+			const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
+
+			UWorld* const World = GetWorld();
+			if (World != NULL)
+			{
+				// Set the instigator of the projectile
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+				SpawnParams.Instigator = Instigator;
+
+				//static ConstructorHelpers::FClassFinder<AMagUsProjectile> PlayerPawnClassFinder(TEXT("/Game/Blueprints/Fireball_BP"));
+				//DefaultPawnClass = PlayerPawnClassFinder.Class;
+
+				// spawn the projectile
+				AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+				Projectile->SetDamage(this->Strength);
+			}
 		}
 	}
+
+
+	else if (this->spellType == GestEnum::SWIPE)
+	{
+		// try and fire a projectile
+		if (Fireball!= NULL)
+		{
+			FRotator SpawnRotation = GetControlRotation();
+
+			// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
+			const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
+
+			UWorld* const World = GetWorld();
+			if (World != NULL)
+			{
+				// Set the instigator of the projectile
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+				SpawnParams.Instigator = Instigator;
+
+				//static ConstructorHelpers::FClassFinder<AMagUsProjectile> PlayerPawnClassFinder(TEXT("/Game/Blueprints/Fireball_BP"));
+				//DefaultPawnClass = PlayerPawnClassFinder.Class;
+
+				// spawn the projectile
+				AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(Fireball, SpawnLocation, SpawnRotation, SpawnParams);
+				Projectile->SetDamage(this->Strength);
+			}
+		}
+	}
+	else if (this->spellType == GestEnum::KEYTAP)
+		{
+			// try and fire a projectile
+			if (Iceball != NULL)
+			{
+				FRotator SpawnRotation = GetControlRotation();
+
+				// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
+				const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
+
+				UWorld* const World = GetWorld();
+				if (World != NULL)
+				{
+					// Set the instigator of the projectile
+					FActorSpawnParameters SpawnParams;
+					SpawnParams.Owner = this;
+					SpawnParams.Instigator = Instigator;
+
+					//static ConstructorHelpers::FClassFinder<AMagUsProjectile> PlayerPawnClassFinder(TEXT("/Game/Blueprints/Fireball_BP"));
+					//DefaultPawnClass = PlayerPawnClassFinder.Class;
+
+					// spawn the projectile
+					AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(Iceball, SpawnLocation, SpawnRotation, SpawnParams);
+					Projectile->SetDamage(this->Strength);
+				}
+			}
+		}
+
 
 	// try and play the sound if specified
 	if (FireSound != NULL)
@@ -132,7 +197,7 @@ void AMagUsCharacter::OnFire()
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
-
+	this->spellType = GestEnum::NONE;
 }
 
 void AMagUsCharacter::MoveForward(float Value)
@@ -295,21 +360,35 @@ void AMagUsCharacter::Killed(AActor* Someone) {
 	}
 }
 
+void AMagUsCharacter::RefreshCanAttack()
+{
+	this->canAttack = true;
+}
 
 GestEnum AMagUsCharacter::getGestureType(FString gest)
 {
-	if ((this->last - clock()) / CLOCKS_PER_SEC < -1)
+	if (this->canAttack == true)
 	{
-		this->last = clock();
+		GetWorldTimerManager().SetTimer(this, &AMagUsCharacter::RefreshCanAttack, 0.2f, true);
+		this->canAttack = false;
 		if (gest == "Circle")
 		{
+			this->spellType = GestEnum::CIRCLE;
 			this->OnFire();
 			return GestEnum::CIRCLE;
 		}
 		else if (gest == "KeyTap")
+		{
+			this->spellType = GestEnum::KEYTAP;
+			this->OnFire();
 			return GestEnum::KEYTAP;
+		}
 		else
+		{
+			this->spellType = GestEnum::SWIPE;
+			this->OnFire();
 			return GestEnum::SWIPE;
+		}
 	}
-	return (GestEnum::SWIPE);
+	return (GestEnum::NONE);
 }

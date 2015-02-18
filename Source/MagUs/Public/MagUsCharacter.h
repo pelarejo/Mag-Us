@@ -7,12 +7,14 @@
 #include <iostream>
 #include "MagUsCharacter.generated.h"
 
+/* Gesture enum */
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class GestEnum
 {
 	CIRCLE,
 	SWIPE,
-	KEYTAP
+	KEYTAP,
+	NONE
 };
 
 UCLASS(config=Game)
@@ -34,7 +36,6 @@ class AMagUsCharacter : public ACharacter
 public:
 	AMagUsCharacter(const FObjectInitializer& ObjectInitializer);
 
-	/* Gesture enum */
 
 
 
@@ -52,7 +53,15 @@ public:
 
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	TSubclassOf<class AMagUsProjectile> Fireball;
+
+	/** Projectile class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AMagUsProjectile> ProjectileClass;
+
+	/** Projectile class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<class AMagUsProjectile> Iceball;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -91,9 +100,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int32 Speed = 600;
 
-	clock_t last = clock();
-
+	bool canAttack = true;
+	GestEnum spellType;
 protected:
+
+	void RefreshCanAttack();
+
 	// LockedActor is linked to the in-game mode
 	AActor* LockedActor;
 	// bLockedPressed is linked to input
