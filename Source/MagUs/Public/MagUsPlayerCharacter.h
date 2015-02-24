@@ -105,9 +105,12 @@ protected:
 
 	void ResetHMD();
 
+
 	bool DoubleTapDigital(float Value);
 	bool DoubleTapAnalog(float Rate);
 	void Dash(float Multiplier);
+
+	void RegenPlayer();
 
 protected:
 	// APawn interface
@@ -130,8 +133,9 @@ public:
 
 	virtual void Killed(AActor* Someone);
 
+	virtual void BeginPlay() override;
+
 private:
 	FORCEINLINE void Timer_DoubleTapReset();
-
 };
 

@@ -32,7 +32,7 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Default offset from the character location for projectiles to spawn
-	ProjectileOffset = FVector(100.0f, 30.0f, 10.0f);
+	ProjectileOffset = FVector(40.0f, 0.0f, 0.0f);
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("CharacterMesh1P"));
@@ -53,7 +53,16 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 
 	// Change Speed of character
 	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
-	CharacterMovement->MaxWalkSpeed = Speed;
+
+	// Init stats
+	GetCharacterMovement()->MaxWalkSpeed = 600;// RealAttr->Speed;
+
+	/*Attr->MaxHealth = 100;
+	Attr->Strength = 12;
+	Attr->Defense = 2;
+	Attr->Regeneration = 20;
+	Attr->RegenerationRate = 3.0f;
+	Attr->Speed = 600;*/
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -94,7 +103,7 @@ void AMagUsPlayerCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent 
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Player: " + FString::SanitizeFloat(DamageTaken) + " - " + FString::SanitizeFloat(Defense)));
 	}
-	Health -= (DamageTaken - Defense);
+	Health -= DamageTaken; // TODO : Calc the DamageTaken
 }
 
 void AMagUsPlayerCharacter::OnFire()
@@ -117,7 +126,7 @@ void AMagUsPlayerCharacter::OnFire()
 
 			// spawn the projectile
 			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
-			Projectile->SetDamage(this->Strength);
+			Projectile->SetDamage(12/*RealAttr->Strength*/); // For now, will be replaced by damage calc in Projectile
 		}
 	}
 
@@ -430,6 +439,23 @@ GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 	return (GestEnum::NONE);
 }
 
-void AMagUsPlayerCharacter::Timer_DoubleTapReset() {
+	void AMagUsPlayerCharacter::Timer_DoubleTapReset() {
 	DoubleTap = EDoubleTap::DT_Reset;
+}
+
+void AMagUsPlayerCharacter::BeginPlay()
+{
+	FTimerManager& WorldTimerManager = GetWorldTimerManager();
+	WorldTimerManager.SetTimer(this, &AMagUsPlayerCharacter::RegenPlayer, 3.0f/*RealAttr->RegenerationRate*/, true);
+}
+
+void AMagUsPlayerCharacter::RegenPlayer()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Regen"));
+	}
+	Health += 20;//RealAttr->Regeneration;
+	if (Health > 100)//RealAttr->MaxHealth)
+		Health = 100;//RealAttr->MaxHealth;
 }

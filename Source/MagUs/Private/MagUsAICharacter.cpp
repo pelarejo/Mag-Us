@@ -9,7 +9,11 @@
 AMagUsAICharacter::AMagUsAICharacter(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
+	// Default offset from the character location for projectiles to spawn
 	ProjectileOffset = FVector(40.0f, 0.0f, 0.0f);
+
+	// Init Speed
+	GetCharacterMovement()->MaxWalkSpeed = 300;// RealAttr->Speed;
 }
 
 void AMagUsAICharacter::OnFire()
@@ -32,7 +36,7 @@ void AMagUsAICharacter::OnFire()
 
 			// spawn the projectile
 			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
-			Projectile->SetDamage(this->Strength);
+			Projectile->SetDamage(12/*RealAttr->Strength*/); // For now, will be replaced by damage calc in Projectile
 		}
 	}
 	/*
@@ -60,7 +64,7 @@ void AMagUsAICharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent cons
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("AI: " + FString::SanitizeFloat(DamageTaken)));
 	}
-	this->Health -= DamageTaken;
+	this->Health -= DamageTaken; // TODO : Calc DamageTaken
 
 	if (this->Health < 0)
 	{
