@@ -12,6 +12,9 @@
 //////////////////////////////////////////////////////////////////////////
 // AMagUsPlayerCharacter
 
+const float AMagUsPlayerCharacter::DoubleTapResetTime_CST = 0.2f;
+const float AMagUsPlayerCharacter::DashForce_CST = 2000.0f;
+
 AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -146,8 +149,15 @@ void AMagUsPlayerCharacter::MoveForward(float Value)
 	}
 }
 
+// FORCEINLINE function, it's for Digital/Analog Overload - Do not add stuff here
 void AMagUsPlayerCharacter::MoveRight(float Value)
 {
+	MoveRight(Value, false);
+}
+
+void AMagUsPlayerCharacter::MoveRight(float Value, bool bAnalog)
+{
+	(bAnalog == false) ? DoubleTapDigital(Value) : DoubleTapAnalog(Value);
 	if (Value != 0.0f) {
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
@@ -164,6 +174,7 @@ void AMagUsPlayerCharacter::AddControllerYawInput(float Val) {
 void AMagUsPlayerCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
+	DoubleTapAnalog(Rate);
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -174,12 +185,94 @@ void AMagUsPlayerCharacter::LookUpAtRate(float Rate)
 }
 
 void AMagUsPlayerCharacter::TurnRateOrMoveRight(float Value) {
-	if (bLockedPressed == false) {
-		TurnAtRate(Value);
+	(bLockedPressed == false) ? TurnAtRate(Value) : MoveRight(Value, true);
+}
+
+bool AMagUsPlayerCharacter::DoubleTapDigital(float Value) {
+	// Resets DT when switching side
+	if (Value != 0.0f && (Value < 0.0f) != bSignX) {
+		if (DoubleTap == EDoubleTap::DT_Second)
+			GetWorldTimerManager().ClearTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset);
+		DoubleTap = EDoubleTap::DT_Init;
+		bSignX = (Value < 0.0f);
 	}
-	else {
-		MoveRight(Value);
+	// Actual DT detection
+	switch (DoubleTap) {
+	case EDoubleTap::DT_Init:
+		if (abs(Value) == 1.0f) {
+			DoubleTap = EDoubleTap::DT_First;
+			GetWorldTimerManager().SetTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset, DoubleTapResetTime_CST, false);
+		}
+		break;
+	case EDoubleTap::DT_First:
+		if (abs(Value) == 0.0f)
+			DoubleTap = EDoubleTap::DT_Second;
+		break;
+	case EDoubleTap::DT_Second:
+		if (abs(Value) == 1.0f) {
+			Dash(Value);
+			GetWorldTimerManager().ClearTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset);
+			Timer_DoubleTapReset();
+			return true;
+		}
+		break;
+	case EDoubleTap::DT_Reset:
+		if (abs(Value) == 0.0f)
+			DoubleTap = EDoubleTap::DT_Init;
+		break;
+	default:
+		break;
 	}
+	return false;
+}
+
+bool AMagUsPlayerCharacter::DoubleTapAnalog(float Rate) {
+	float Threashold = 0.8f;
+	float Zero = 0.4f;
+
+	if (bLockedPressed == false || abs(Rate) < Zero)
+		return false;
+	// Resets DT when switching side
+	if (abs(Rate) > Zero && (Rate < 0.0f) != bSignX) {
+		if (DoubleTap == EDoubleTap::DT_Second)
+			GetWorldTimerManager().ClearTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset);
+		DoubleTap = EDoubleTap::DT_Init;
+		bSignX = (Rate < 0.0f);
+	}
+	// Actual DT detection
+	switch (DoubleTap) {
+	case EDoubleTap::DT_Init:
+		if (abs(Rate) > Threashold) {
+			DoubleTap = EDoubleTap::DT_First;
+			GetWorldTimerManager().SetTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset, DoubleTapResetTime_CST, false);
+		}
+		break;
+	case EDoubleTap::DT_First:
+		if (abs(Rate) > Zero && abs(Rate) < Threashold)
+			DoubleTap = EDoubleTap::DT_Second;
+		break;
+	case EDoubleTap::DT_Second:
+		if (abs(Rate) > Threashold) {
+			Dash((Rate < 0.0f) ? -1 : 1);
+			GetWorldTimerManager().ClearTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset);
+			Timer_DoubleTapReset();
+			return true;
+		}
+		break;
+	case EDoubleTap::DT_Reset:
+		if (abs(Rate) > Zero && abs(Rate) < Threashold)
+			DoubleTap = EDoubleTap::DT_Init;
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+void AMagUsPlayerCharacter::Dash(float Multiplier) {
+	FVector DashVect(0, Multiplier * DashForce_CST, 0);
+	DashVect = FRotator(0, GetControlRotation().Yaw, 0).RotateVector(DashVect);
+	LaunchCharacter(DashVect, false, true);
 }
 
 void AMagUsPlayerCharacter::ResetHMD() {
@@ -335,4 +428,8 @@ GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 		}
 	}
 	return (GestEnum::NONE);
+}
+
+void AMagUsPlayerCharacter::Timer_DoubleTapReset() {
+	DoubleTap = EDoubleTap::DT_Reset;
 }

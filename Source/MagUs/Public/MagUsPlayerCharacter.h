@@ -6,7 +6,16 @@
 #include <ctime>
 #include "MagUsPlayerCharacter.generated.h"
 
-UCLASS(config=Game)
+UENUM(BlueprintType)
+enum class EDoubleTap : uint8
+{
+	DT_Init 	UMETA(DisplayName = "Initial"),
+	DT_First 	UMETA(DisplayName = "First"),
+	DT_Second	UMETA(DisplayName = "Second"),
+	DT_Reset	UMETA(DisplayName = "Reset")
+};
+
+UCLASS(config = Game)
 class AMagUsPlayerCharacter : public AMagUsCharacter
 {
 	GENERATED_BODY()
@@ -42,10 +51,17 @@ public:
 	GestEnum spellType;
 
 protected:
+	static const float DoubleTapResetTime_CST;
+	static const float DashForce_CST;
+
 	// LockedActor is linked to the in-game mode
 	AActor* LockedActor;
 	// bLockedPressed is linked to input
 	bool	bLockedPressed;
+
+	EDoubleTap	DoubleTap;
+
+	bool		bSignX; // true = negative
 
 	/** Fires a projectile. */
 	void OnFire();
@@ -67,7 +83,8 @@ protected:
 	void MoveForward(float Val);
 
 	/** Handles stafing movement, left and right */
-	void MoveRight(float Val);
+	FORCEINLINE void MoveRight(float Val);
+	void MoveRight(float Val, bool bAnalog);
 
 	/**
 	 * Called via input to turn at a given rate.
@@ -87,6 +104,10 @@ protected:
 	bool IsLockedActorWithinDistance();
 
 	void ResetHMD();
+
+	bool DoubleTapDigital(float Value);
+	bool DoubleTapAnalog(float Rate);
+	void Dash(float Multiplier);
 
 protected:
 	// APawn interface
@@ -108,6 +129,9 @@ public:
 	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
 
 	virtual void Killed(AActor* Someone);
+
+private:
+	FORCEINLINE void Timer_DoubleTapReset();
 
 };
 
