@@ -88,6 +88,8 @@ protected:
 
 	void ResetHMD();
 
+	void RegenPlayer();
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
@@ -109,5 +111,7 @@ public:
 
 	virtual void Killed(AActor* Someone);
 
+private:
+	virtual void BeginPlay() override;
 };
 
