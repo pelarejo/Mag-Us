@@ -51,6 +51,7 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 	// Change Speed of character
 	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
 	CharacterMovement->MaxWalkSpeed = Speed;
+	this->canAttack = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -96,46 +97,48 @@ void AMagUsPlayerCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent 
 
 void AMagUsPlayerCharacter::OnFire()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "TOTO");
+
 	// try and fire a projectile
-	if (ProjectileClass != NULL)
-	{
-		FRotator SpawnRotation = GetControlRotation();
-
-		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
-		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
-
-		UWorld* const World = GetWorld();
-		if (World != NULL)
+	if (ProjectileArray[(int)this->spellType] != NULL)
 		{
-			// Set the instigator of the projectile
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = Instigator;
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "EXIST");
+			FRotator SpawnRotation = GetControlRotation();
 
-			// spawn the projectile
-			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
-			Projectile->SetDamage(this->Strength);
+			// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
+			const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
+
+			UWorld* const World = GetWorld();
+			if (World != NULL)
+			{
+				// Set the instigator of the projectile
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+				SpawnParams.Instigator = Instigator;
+
+				// spawn the projectile
+				AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
+				Projectile->SetDamage(this->Strength);
+			}
+		}
+
+		// try and play the sound if specified
+		if (FireSound != NULL)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		}
+
+		// try and play a firing animation if specified
+		if (FireAnimation != NULL)
+		{
+			// Get the animation object for the arms mesh
+			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+			if (AnimInstance != NULL)
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
 		}
 	}
-
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-	}
-
-}
 
 void AMagUsPlayerCharacter::MoveForward(float Value)
 {
@@ -311,8 +314,11 @@ void AMagUsPlayerCharacter::RefreshCanAttack()
 
 GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "getGestureType");
+
 	if (this->canAttack == true)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "getGestureType2");
 		GetWorldTimerManager().SetTimer(this, &AMagUsPlayerCharacter::RefreshCanAttack, 0.2f, true);
 		this->canAttack = false;
 		if (gest == "Circle")
