@@ -13,7 +13,7 @@ AMagUsAICharacter::AMagUsAICharacter(const FObjectInitializer& ObjectInitializer
 	ProjectileOffset = FVector(40.0f, 0.0f, 0.0f);
 
 	// Init Speed
-	GetCharacterMovement()->MaxWalkSpeed = 300;// RealAttr->Speed;
+	GetCharacterMovement()->MaxWalkSpeed = 300;//RealAttr->Speed;
 }
 
 void AMagUsAICharacter::OnFire()
@@ -60,10 +60,6 @@ void AMagUsAICharacter::OnFire()
 
 void AMagUsAICharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("AI: " + FString::SanitizeFloat(DamageTaken)));
-	}
 	this->Health -= DamageTaken; // TODO : Calc DamageTaken
 
 	if (this->Health < 0)

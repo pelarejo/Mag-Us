@@ -54,7 +54,6 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 	// Change Speed of character
 	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
 
-	CharacterMovement->MaxWalkSpeed = Speed;
 	this->canAttack = true;
 
 	// Init stats
@@ -116,7 +115,6 @@ void AMagUsPlayerCharacter::OnFire()
 	// try and fire a projectile
 	if (ProjectileArray[(int)this->spellType] != NULL)
 		{
-<<<<<<< HEAD
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "EXIST");
 			FRotator SpawnRotation = GetControlRotation();
 
@@ -133,18 +131,8 @@ void AMagUsPlayerCharacter::OnFire()
 
 				// spawn the projectile
 				AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
-				Projectile->SetDamage(this->Strength);
+				Projectile->SetDamage(12/*RealAttr->Strength*/); // For now, will be replaced by damage calc in Projectile
 			}
-=======
-			// Set the instigator of the projectile
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = Instigator;
-
-			// spawn the projectile
-			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
-			Projectile->SetDamage(12/*RealAttr->Strength*/); // For now, will be replaced by damage calc in Projectile
->>>>>>> 99c90e8cf254af4c882963118638e2b80b364b66
 		}
 
 		// try and play the sound if specified
