@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
 #include "GameFramework/Character.h"
+#include "Attributes.h"
+#include "Attributes.h"
 #include "MagUsCharacter.generated.h"
 
 /* Gesture enum */
@@ -54,24 +56,12 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int32 Health = 100;
+	int32 Health = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int32 MaxHealth = 100;
+	TSubclassOf<class UAttributes> BaseAttr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int32 Strength = 12;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int32 Defense = 2;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int32 Regeneration = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		float RegenerationRate = 1.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int32 Speed = 600;
+	TSubclassOf<class UAttributes> RealAttr;
 };
 

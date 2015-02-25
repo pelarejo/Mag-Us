@@ -3,6 +3,7 @@
 #pragma once
 
 #include "MagUsSpell.h"
+#include "Attributes.h"
 #include "MagUsBuff.generated.h"
 
 /**
@@ -15,5 +16,8 @@ class MAGUS_API AMagUsBuff : public AMagUsSpell
 	
 public:
 	AMagUsBuff(const FObjectInitializer& ObjectInitializer);
-	
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	TSubclassOf<class UAttributes> Attr;
 };

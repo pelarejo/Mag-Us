@@ -12,6 +12,9 @@
 //////////////////////////////////////////////////////////////////////////
 // AMagUsPlayerCharacter
 
+const float AMagUsPlayerCharacter::DoubleTapResetTime_CST = 0.2f;
+const float AMagUsPlayerCharacter::DashForce_CST = 2000.0f;
+
 AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -29,7 +32,7 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Default offset from the character location for projectiles to spawn
-	ProjectileOffset = FVector(100.0f, 30.0f, 10.0f);
+	ProjectileOffset = FVector(40.0f, 0.0f, 0.0f);
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("CharacterMesh1P"));
@@ -50,8 +53,19 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 
 	// Change Speed of character
 	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
+
 	CharacterMovement->MaxWalkSpeed = Speed;
 	this->canAttack = true;
+
+	// Init stats
+	GetCharacterMovement()->MaxWalkSpeed = 600;// RealAttr->Speed;
+
+	/*Attr->MaxHealth = 100;
+	Attr->Strength = 12;
+	Attr->Defense = 2;
+	Attr->Regeneration = 20;
+	Attr->RegenerationRate = 3.0f;
+	Attr->Speed = 600;*/
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -92,7 +106,7 @@ void AMagUsPlayerCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent 
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Player: " + FString::SanitizeFloat(DamageTaken) + " - " + FString::SanitizeFloat(Defense)));
 	}
-	Health -= (DamageTaken - Defense);
+	Health -= DamageTaken; // TODO : Calc the DamageTaken
 }
 
 void AMagUsPlayerCharacter::OnFire()
@@ -102,6 +116,7 @@ void AMagUsPlayerCharacter::OnFire()
 	// try and fire a projectile
 	if (ProjectileArray[(int)this->spellType] != NULL)
 		{
+<<<<<<< HEAD
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "EXIST");
 			FRotator SpawnRotation = GetControlRotation();
 
@@ -120,6 +135,16 @@ void AMagUsPlayerCharacter::OnFire()
 				AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
 				Projectile->SetDamage(this->Strength);
 			}
+=======
+			// Set the instigator of the projectile
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = Instigator;
+
+			// spawn the projectile
+			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+			Projectile->SetDamage(12/*RealAttr->Strength*/); // For now, will be replaced by damage calc in Projectile
+>>>>>>> 99c90e8cf254af4c882963118638e2b80b364b66
 		}
 
 		// try and play the sound if specified
@@ -149,8 +174,15 @@ void AMagUsPlayerCharacter::MoveForward(float Value)
 	}
 }
 
+// FORCEINLINE function, it's for Digital/Analog Overload - Do not add stuff here
 void AMagUsPlayerCharacter::MoveRight(float Value)
 {
+	MoveRight(Value, false);
+}
+
+void AMagUsPlayerCharacter::MoveRight(float Value, bool bAnalog)
+{
+	(bAnalog == false) ? DoubleTapDigital(Value) : DoubleTapAnalog(Value);
 	if (Value != 0.0f) {
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
@@ -167,6 +199,7 @@ void AMagUsPlayerCharacter::AddControllerYawInput(float Val) {
 void AMagUsPlayerCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
+	DoubleTapAnalog(Rate);
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -177,12 +210,94 @@ void AMagUsPlayerCharacter::LookUpAtRate(float Rate)
 }
 
 void AMagUsPlayerCharacter::TurnRateOrMoveRight(float Value) {
-	if (bLockedPressed == false) {
-		TurnAtRate(Value);
+	(bLockedPressed == false) ? TurnAtRate(Value) : MoveRight(Value, true);
+}
+
+bool AMagUsPlayerCharacter::DoubleTapDigital(float Value) {
+	// Resets DT when switching side
+	if (Value != 0.0f && (Value < 0.0f) != bSignX) {
+		if (DoubleTap == EDoubleTap::DT_Second)
+			GetWorldTimerManager().ClearTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset);
+		DoubleTap = EDoubleTap::DT_Init;
+		bSignX = (Value < 0.0f);
 	}
-	else {
-		MoveRight(Value);
+	// Actual DT detection
+	switch (DoubleTap) {
+	case EDoubleTap::DT_Init:
+		if (abs(Value) == 1.0f) {
+			DoubleTap = EDoubleTap::DT_First;
+			GetWorldTimerManager().SetTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset, DoubleTapResetTime_CST, false);
+		}
+		break;
+	case EDoubleTap::DT_First:
+		if (abs(Value) == 0.0f)
+			DoubleTap = EDoubleTap::DT_Second;
+		break;
+	case EDoubleTap::DT_Second:
+		if (abs(Value) == 1.0f) {
+			Dash(Value);
+			GetWorldTimerManager().ClearTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset);
+			Timer_DoubleTapReset();
+			return true;
+		}
+		break;
+	case EDoubleTap::DT_Reset:
+		if (abs(Value) == 0.0f)
+			DoubleTap = EDoubleTap::DT_Init;
+		break;
+	default:
+		break;
 	}
+	return false;
+}
+
+bool AMagUsPlayerCharacter::DoubleTapAnalog(float Rate) {
+	float Threashold = 0.8f;
+	float Zero = 0.4f;
+
+	if (bLockedPressed == false || abs(Rate) < Zero)
+		return false;
+	// Resets DT when switching side
+	if (abs(Rate) > Zero && (Rate < 0.0f) != bSignX) {
+		if (DoubleTap == EDoubleTap::DT_Second)
+			GetWorldTimerManager().ClearTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset);
+		DoubleTap = EDoubleTap::DT_Init;
+		bSignX = (Rate < 0.0f);
+	}
+	// Actual DT detection
+	switch (DoubleTap) {
+	case EDoubleTap::DT_Init:
+		if (abs(Rate) > Threashold) {
+			DoubleTap = EDoubleTap::DT_First;
+			GetWorldTimerManager().SetTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset, DoubleTapResetTime_CST, false);
+		}
+		break;
+	case EDoubleTap::DT_First:
+		if (abs(Rate) > Zero && abs(Rate) < Threashold)
+			DoubleTap = EDoubleTap::DT_Second;
+		break;
+	case EDoubleTap::DT_Second:
+		if (abs(Rate) > Threashold) {
+			Dash((Rate < 0.0f) ? -1 : 1);
+			GetWorldTimerManager().ClearTimer(this, &AMagUsPlayerCharacter::Timer_DoubleTapReset);
+			Timer_DoubleTapReset();
+			return true;
+		}
+		break;
+	case EDoubleTap::DT_Reset:
+		if (abs(Rate) > Zero && abs(Rate) < Threashold)
+			DoubleTap = EDoubleTap::DT_Init;
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+void AMagUsPlayerCharacter::Dash(float Multiplier) {
+	FVector DashVect(0, Multiplier * DashForce_CST, 0);
+	DashVect = FRotator(0, GetControlRotation().Yaw, 0).RotateVector(DashVect);
+	LaunchCharacter(DashVect, false, true);
 }
 
 void AMagUsPlayerCharacter::ResetHMD() {
@@ -341,4 +456,25 @@ GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 		}
 	}
 	return (GestEnum::NONE);
+}
+
+	void AMagUsPlayerCharacter::Timer_DoubleTapReset() {
+	DoubleTap = EDoubleTap::DT_Reset;
+}
+
+void AMagUsPlayerCharacter::BeginPlay()
+{
+	FTimerManager& WorldTimerManager = GetWorldTimerManager();
+	WorldTimerManager.SetTimer(this, &AMagUsPlayerCharacter::RegenPlayer, 3.0f/*RealAttr->RegenerationRate*/, true);
+}
+
+void AMagUsPlayerCharacter::RegenPlayer()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Regen"));
+	}
+	Health += 20;//RealAttr->Regeneration;
+	if (Health > 100)//RealAttr->MaxHealth)
+		Health = 100;//RealAttr->MaxHealth;
 }
