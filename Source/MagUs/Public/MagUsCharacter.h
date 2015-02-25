@@ -2,7 +2,6 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "Attributes.h"
-#include "Attributes.h"
 #include "MagUsCharacter.generated.h"
 
 /* Gesture enum */

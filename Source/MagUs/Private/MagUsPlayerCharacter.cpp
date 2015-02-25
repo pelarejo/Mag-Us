@@ -451,10 +451,6 @@ void AMagUsPlayerCharacter::BeginPlay()
 
 void AMagUsPlayerCharacter::RegenPlayer()
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Regen"));
-	}
 	Health += 20;//RealAttr->Regeneration;
 	if (Health > 100)//RealAttr->MaxHealth)
 		Health = 100;//RealAttr->MaxHealth;
