@@ -33,7 +33,7 @@ AMagUsProjectile::AMagUsProjectile(const FObjectInitializer& ObjectInitializer)
 	ProjectileMovement->ProjectileGravityScale = 0;
 
 	// Die after 3 seconds by default
-	InitialLifeSpan = 1.0f;
+	InitialLifeSpan = 3.0f;
 }
 
 void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -43,7 +43,14 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Destroy();
 		return;
 	}
-	
+	if (OtherActor->IsA(AMagUsProjectile::StaticClass()))
+	{
+		OtherActor->Destroy();
+		Destroy();
+		return;
+	}
+
+
 	// Try to damage character
 	ACharacter* Character(Cast<AMagUsAICharacter>(OtherActor));	// Is Component an AI
 	if (!Character)
@@ -55,7 +62,7 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	}
 	// Only add impulse if we hit a physics
 	else if (OtherComp->IsSimulatingPhysics())
-			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 	// Destroy projectile 
 	Destroy();
