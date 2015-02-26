@@ -18,6 +18,8 @@ public:
 
 	virtual void ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
 
+	virtual void BeginPlay() override;
+
 protected:
 	/** Fires a projectile. */
 	UFUNCTION(BlueprintCallable, Category = SpellManagement)

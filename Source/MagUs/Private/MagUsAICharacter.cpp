@@ -11,9 +11,6 @@ AMagUsAICharacter::AMagUsAICharacter(const FObjectInitializer& ObjectInitializer
 {
 	// Default offset from the character location for projectiles to spawn
 	ProjectileOffset = FVector(40.0f, 0.0f, 0.0f);
-
-	// Init Speed
-	GetCharacterMovement()->MaxWalkSpeed = 300;//RealAttr->Speed;
 }
 
 void AMagUsAICharacter::OnFire()
@@ -36,7 +33,7 @@ void AMagUsAICharacter::OnFire()
 
 			// spawn the projectile
 			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
-			Projectile->SetDamage(12/*RealAttr->Strength*/); // For now, will be replaced by damage calc in Projectile
+			Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
 		}
 	}
 	/*
@@ -71,4 +68,11 @@ void AMagUsAICharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent cons
 
 		Destroy();
 	}
+}
+
+void AMagUsAICharacter::BeginPlay()
+{
+	// Change Speed of character
+	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
+	GetCharacterMovement()->MaxWalkSpeed = RealAttr->GetDefaultObject<UAttributes>()->Speed;
 }

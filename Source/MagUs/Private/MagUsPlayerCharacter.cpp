@@ -7,6 +7,7 @@
 #include "Animation/AnimInstance.h"
 #include "Engine.h"
 #include "math.h"
+#include <iostream>
 #include "HeadMountedDisplay.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -51,20 +52,7 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
-	// Change Speed of character
-	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
-
 	this->canAttack = true;
-
-	// Init stats
-	GetCharacterMovement()->MaxWalkSpeed = 600;// RealAttr->Speed;
-
-	/*Attr->MaxHealth = 100;
-	Attr->Strength = 12;
-	Attr->Defense = 2;
-	Attr->Regeneration = 20;
-	Attr->RegenerationRate = 3.0f;
-	Attr->Speed = 600;*/
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -128,7 +116,7 @@ void AMagUsPlayerCharacter::OnFire()
 
 				// spawn the projectile
 				AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
-				Projectile->SetDamage(12/*RealAttr->Strength*/); // For now, will be replaced by damage calc in Projectile
+				Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
 			}
 		}
 
@@ -450,12 +438,16 @@ GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 void AMagUsPlayerCharacter::BeginPlay()
 {
 	FTimerManager& WorldTimerManager = GetWorldTimerManager();
-	WorldTimerManager.SetTimer(this, &AMagUsPlayerCharacter::RegenPlayer, 3.0f/*RealAttr->RegenerationRate*/, true);
+	WorldTimerManager.SetTimer(this, &AMagUsPlayerCharacter::RegenPlayer, RealAttr->GetDefaultObject<UAttributes>()->RegenerationRate, true);
+
+	// Change Speed of character
+	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
+	GetCharacterMovement()->MaxWalkSpeed = RealAttr->GetDefaultObject<UAttributes>()->Speed;
 }
 
 void AMagUsPlayerCharacter::RegenPlayer()
 {
-	Health += 20;//RealAttr->Regeneration;
-	if (Health > 100)//RealAttr->MaxHealth)
-		Health = 100;//RealAttr->MaxHealth;
+	Health += RealAttr->GetDefaultObject<UAttributes>()->Regeneration;
+	if (Health > RealAttr->GetDefaultObject<UAttributes>()->MaxHealth)
+		Health = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth;
 }
