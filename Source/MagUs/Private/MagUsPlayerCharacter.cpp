@@ -110,12 +110,9 @@ void AMagUsPlayerCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent 
 
 void AMagUsPlayerCharacter::OnFire()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "TOTO");
-
 	// try and fire a projectile
 	if (ProjectileArray[(int)this->spellType] != NULL)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "EXIST");
 			FRotator SpawnRotation = GetControlRotation();
 
 			// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
