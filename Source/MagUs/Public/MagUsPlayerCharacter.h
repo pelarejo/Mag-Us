@@ -66,6 +66,9 @@ protected:
 	/** Fires a projectile. */
 	void OnFire();
 
+	/** Launch a shield. */
+	void LaunchShield();
+
 	/** Locks on enemy */
 	void LockPressed();
 	void LockReleased();

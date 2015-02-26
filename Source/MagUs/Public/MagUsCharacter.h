@@ -2,6 +2,7 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "Attributes.h"
+#include "MagUsBuffDef.h"
 #include "MagUsCharacter.generated.h"
 
 /* Gesture enum */
@@ -26,6 +27,10 @@ protected:
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = SpellManagement)
 	TSubclassOf<class AMagUsProjectile> ProjectileArray[4];
+
+	/** Shield class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category = SpellManagement)
+	TSubclassOf<class AMagUsBuffDef> ShieldArray[4];
 
 	/** Location for projectiles to spawn */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)

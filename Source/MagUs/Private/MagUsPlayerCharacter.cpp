@@ -68,6 +68,7 @@ void AMagUsPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Inp
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AMagUsPlayerCharacter::OnFire);
+	InputComponent->BindAction("Shield", IE_Pressed, this, &AMagUsPlayerCharacter::LaunchShield);
 
 	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsPlayerCharacter::LockPressed);
 	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsPlayerCharacter::LockReleased);
@@ -100,43 +101,87 @@ void AMagUsPlayerCharacter::OnFire()
 {
 	// try and fire a projectile
 	if (ProjectileArray[(int)this->spellType] != NULL)
+	{
+		FRotator SpawnRotation = GetControlRotation();
+
+		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
+		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
+
+		UWorld* const World = GetWorld();
+		if (World != NULL)
 		{
-			FRotator SpawnRotation = GetControlRotation();
+			// Set the instigator of the projectile
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = Instigator;
 
-			// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
-			const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
-
-			UWorld* const World = GetWorld();
-			if (World != NULL)
-			{
-				// Set the instigator of the projectile
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.Owner = this;
-				SpawnParams.Instigator = Instigator;
-
-				// spawn the projectile
-				AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
-				Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
-			}
-		}
-
-		// try and play the sound if specified
-		if (FireSound != NULL)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-		}
-
-		// try and play a firing animation if specified
-		if (FireAnimation != NULL)
-		{
-			// Get the animation object for the arms mesh
-			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-			if (AnimInstance != NULL)
-			{
-				AnimInstance->Montage_Play(FireAnimation, 1.f);
-			}
+			// spawn the projectile
+			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
+			Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
 		}
 	}
+
+	// try and play the sound if specified
+	if (FireSound != NULL)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	}
+
+	// try and play a firing animation if specified
+	if (FireAnimation != NULL)
+	{
+		// Get the animation object for the arms mesh
+		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		if (AnimInstance != NULL)
+		{
+			AnimInstance->Montage_Play(FireAnimation, 1.f);
+		}
+	}
+}
+
+void AMagUsPlayerCharacter::LaunchShield()
+{
+	// try and launch a shield
+	if (ShieldArray[(int)this->spellType] != NULL)
+	{
+		FRotator SpawnRotation = GetControlRotation();
+
+		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
+		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
+
+		UWorld* const World = GetWorld();
+		if (World != NULL)
+		{
+			// Set the instigator of the projectile
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = Instigator;
+
+			// launch the shield
+			AMagUsBuffDef* Shield = World->SpawnActor<AMagUsBuffDef>(ShieldArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
+			//TODO : faire les init liés au Shield
+
+			//Shield->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
+		}
+	}
+
+	// try and play the sound if specified
+	if (FireSound != NULL)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	}
+
+	// try and play a firing animation if specified
+	if (FireAnimation != NULL)
+	{
+		// Get the animation object for the arms mesh
+		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		if (AnimInstance != NULL)
+		{
+			AnimInstance->Montage_Play(FireAnimation, 1.f);
+		}
+	}
+}
 
 void AMagUsPlayerCharacter::MoveForward(float Value)
 {
