@@ -158,9 +158,10 @@ void AMagUsPlayerCharacter::LaunchShield()
 			SpawnParams.Instigator = Instigator;
 
 			// launch the shield
-			AMagUsBuffDef* Shield = World->SpawnActor<AMagUsBuffDef>(ShieldArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
-			//TODO : faire les init liés au Shield
+			AMagUsBuffDef* Shield = World->SpawnActor<AMagUsBuffDef>(ShieldArray[(int)this->spellType], SocketLocationR, SpawnRotation, SpawnParams);
+			Shield->AttachRootComponentTo(Mesh1P, FName(TEXT("WeaponPoint")), EAttachLocation::SnapToTarget); // Attach the root component of our Weapon actor to the ArmMesh at the location of the socket.
 
+			//TODO : faire les init liés au Shield
 			//Shield->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
 		}
 	}
