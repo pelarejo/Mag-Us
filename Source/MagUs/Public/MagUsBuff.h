@@ -16,6 +16,7 @@ class MAGUS_API AMagUsBuff : public AMagUsSpell
 	
 public:
 	AMagUsBuff(const FObjectInitializer& ObjectInitializer);
+	//AMagUsBuff();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)

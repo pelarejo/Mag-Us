@@ -7,3 +7,8 @@ AMagUsSpell::AMagUsSpell(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 
 }
+
+//AMagUsSpell::AMagUsSpell()
+//	: Super() {
+//
+//}

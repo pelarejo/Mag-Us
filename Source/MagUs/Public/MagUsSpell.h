@@ -15,5 +15,6 @@ class MAGUS_API AMagUsSpell : public AActor
 	
 public:
 	AMagUsSpell(const FObjectInitializer& ObjectInitializer);
+	//AMagUsSpell();
 	
 };

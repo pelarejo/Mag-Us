@@ -152,6 +152,9 @@ void AMagUsPlayerCharacter::LaunchShield()
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
+			FVector SocketLocationR;
+			SocketLocationR = Mesh1P->GetSocketLocation("WeaponR");
+
 			// Set the instigator of the projectile
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
@@ -162,6 +165,7 @@ void AMagUsPlayerCharacter::LaunchShield()
 			Shield->AttachRootComponentTo(Mesh1P, FName(TEXT("WeaponPoint")), EAttachLocation::SnapToTarget); // Attach the root component of our Weapon actor to the ArmMesh at the location of the socket.
 
 			//TODO : faire les init liés au Shield
+
 			//Shield->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
 		}
 	}

@@ -7,3 +7,8 @@ AMagUsBuff::AMagUsBuff(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 
 }
+
+//AMagUsBuff::AMagUsBuff()
+//	: Super() {
+//
+//}

@@ -6,7 +6,7 @@
 #include "MagUsBuffDef.generated.h"
 
 /**
- * Base des buffs défensifs
+ * Base des buffs défensifs, à renommer en AMagUsShield ?
  */
 UCLASS()
 class MAGUS_API AMagUsBuffDef : public AMagUsBuff
@@ -14,14 +14,17 @@ class MAGUS_API AMagUsBuffDef : public AMagUsBuff
 	GENERATED_BODY()
 
 public:
+	AMagUsBuffDef(const FObjectInitializer& ObjectInitializer);
+	//AMagUsBuffDef();
+
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkelMeshComponents)
-	//AStaticMeshActor * TotemMesh;
+	//AStaticMeshActor * BuffMesh;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkelMeshComponents)
 	//TSubclassOf<class UStaticMesh> BuffMesh;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkelMeshComponents)
-	//UStaticMesh* TotemMesh;
+	//UStaticMesh* BuffMesh;
 	//class UStaticMeshComponent* GetStaticMeshComponent() const;
 
 	
