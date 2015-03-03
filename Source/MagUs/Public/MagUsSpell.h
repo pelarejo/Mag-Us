@@ -17,4 +17,7 @@ public:
 	AMagUsSpell(const FObjectInitializer& ObjectInitializer);
 	//AMagUsSpell();
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	float ManaCost;
 };

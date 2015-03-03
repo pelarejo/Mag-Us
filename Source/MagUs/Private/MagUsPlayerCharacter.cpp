@@ -99,8 +99,11 @@ void AMagUsPlayerCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent 
 
 void AMagUsPlayerCharacter::OnFire()
 {
-	// try and fire a projectile
-	if (ProjectileArray[(int)this->spellType] != NULL)
+	// Get the right Spell to cast
+	TSubclassOf<class AMagUsProjectile> Spell = ProjectileArray[(int)this->spellType];
+
+	// Check if the Spell can be cast
+	if (Spell && ManaPool->CanCast(Spell))
 	{
 		FRotator SpawnRotation = GetControlRotation();
 
@@ -110,13 +113,14 @@ void AMagUsPlayerCharacter::OnFire()
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
-			// Set the instigator of the projectile
+			// Set the instigator of the spell
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			SpawnParams.Instigator = Instigator;
 
-			// spawn the projectile
-			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(ProjectileArray[(int)this->spellType], SpawnLocation, SpawnRotation, SpawnParams);
+			// Cast and spawn the spell
+			ManaPool->CastSpell(Spell);
+			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(Spell, SpawnLocation, SpawnRotation, SpawnParams);
 			Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
 		}
 	}
@@ -141,8 +145,11 @@ void AMagUsPlayerCharacter::OnFire()
 
 void AMagUsPlayerCharacter::LaunchShield()
 {
-	// try and launch a shield
-	if (ShieldArray[(int)this->spellType] != NULL)
+	// Get the right Spell to cast
+	TSubclassOf<class AMagUsBuffDef> Spell = ShieldArray[(int)this->spellType];
+
+	// Check if the Spell can be cast
+	if (Spell && ManaPool->CanCast(Spell))
 	{
 		FRotator SpawnRotation = GetControlRotation();
 
@@ -155,18 +162,17 @@ void AMagUsPlayerCharacter::LaunchShield()
 			FVector SocketLocationR;
 			SocketLocationR = Mesh1P->GetSocketLocation("WeaponR");
 
-			// Set the instigator of the projectile
+			// Set the instigator of the spell
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			SpawnParams.Instigator = Instigator;
 
-			// launch the shield
-			AMagUsBuffDef* Shield = World->SpawnActor<AMagUsBuffDef>(ShieldArray[(int)this->spellType], SocketLocationR, SpawnRotation, SpawnParams);
+			// Cast and spawn the spell
+			ManaPool->CastSpell(Spell);
+			AMagUsBuffDef* Shield = World->SpawnActor<AMagUsBuffDef>(Spell, SocketLocationR, SpawnRotation, SpawnParams);
 			Shield->AttachRootComponentTo(Mesh1P, FName(TEXT("WeaponPoint")), EAttachLocation::SnapToTarget); // Attach the root component of our Weapon actor to the ArmMesh at the location of the socket.
 
 			//TODO : faire les init liés au Shield
-
-			//Shield->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
 		}
 	}
 
@@ -487,6 +493,8 @@ GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 
 void AMagUsPlayerCharacter::BeginPlay()
 {
+	Super::BeginPlay();
+
 	FTimerManager& WorldTimerManager = GetWorldTimerManager();
 	WorldTimerManager.SetTimer(this, &AMagUsPlayerCharacter::RegenPlayer, RealAttr->GetDefaultObject<UAttributes>()->RegenerationRate, true);
 

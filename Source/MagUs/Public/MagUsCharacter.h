@@ -2,6 +2,7 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "Attributes.h"
+#include "Environnement.h"
 #include "MagUsBuffDef.h"
 #include "MagUsCharacter.generated.h"
 
@@ -36,20 +37,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	FVector ProjectileOffset;
 
-	/** Projectile class to spawn (Will be remplaced by ProjectileArray) */
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class AMagUsProjectile> ProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class AMagUsProjectile> Iceball;
-
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class AMagUsProjectile> Poisonball;
-
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class AMagUsProjectile> Windball;
-
-
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class USoundBase* FireSound;
@@ -67,5 +54,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TSubclassOf<class UAttributes> RealAttr;
+
+	UPROPERTY()
+	AEnvironnement* ManaPool;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = SpellManagement)
+	void setManaPool(AEnvironnement* mana_pool);
+
+	UFUNCTION(BlueprintCallable, Category = SpellManagement)
+	AEnvironnement* getManaPool();
 };
 

@@ -9,3 +9,13 @@ AMagUsCharacter::AMagUsCharacter(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
 }
+
+void AMagUsCharacter::setManaPool(AEnvironnement* mana_pool)
+{
+	ManaPool = mana_pool;
+}
+
+AEnvironnement* AMagUsCharacter::getManaPool()
+{
+	return ManaPool;
+}

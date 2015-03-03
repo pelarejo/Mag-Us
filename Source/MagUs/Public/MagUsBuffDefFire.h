@@ -13,7 +13,6 @@ class MAGUS_API AMagUsBuffDefFire : public AMagUsBuffDef
 {
 	GENERATED_BODY()
 	
-	
-	
-	
+public:
+	AMagUsBuffDefFire(const FObjectInitializer& ObjectInitializer);
 };
