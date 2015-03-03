@@ -458,11 +458,8 @@ void AMagUsPlayerCharacter::RefreshCanAttack()
 
 GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "getGestureType");
-
 	if (this->canAttack == true)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "getGestureType2");
 		GetWorldTimerManager().SetTimer(this, &AMagUsPlayerCharacter::RefreshCanAttack, 0.2f, true);
 		this->canAttack = false;
 		if (gest == "Circle")
