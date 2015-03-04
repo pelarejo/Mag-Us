@@ -9,6 +9,7 @@
 #include "math.h"
 #include <iostream>
 #include "HeadMountedDisplay.h"
+#include "MagUsPlayerController.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMagUsPlayerCharacter
@@ -347,21 +348,11 @@ void AMagUsPlayerCharacter::LockReleased() {
 }
 
 void AMagUsPlayerCharacter::OnLock() {
-	FHitResult OutHit = FHitResult(ForceInit);
-	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
-	FVector End = Start + (FirstPersonCameraComponent->GetForwardVector() * LockMaxDistance);
-	FCollisionObjectQueryParams Pawns(ECC_Pawn);
-
-	FCollisionQueryParams TraceParams(FName(TEXT("Lock_Trace")), true, this);
-	TraceParams.bTraceAsyncScene = true;
-	TraceParams.bReturnPhysicalMaterial = false;
-
-	APlayerController* PC = Cast<APlayerController>(GetController());
+	AMagUsPlayerController* PC = Cast<AMagUsPlayerController>(GetController());
 	check(PC);
-	if (GetWorld()->LineTraceSingle(OutHit, Start, End, TraceParams, Pawns) == true
-		&& PC->LineOfSightTo(OutHit.GetActor()) == true) {
-		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Locking " + OutHit.GetActor()->GetName());
-		LockedActor = OutHit.GetActor();
+	FInteractive Inter = PC->GetInteractive();
+	if (Inter.Actor != NULL) {
+		LockedActor = Inter.Actor;
 	}
 }
 
@@ -498,6 +489,7 @@ void AMagUsPlayerCharacter::BeginPlay()
 	// Change Speed of character
 	UCharacterMovementComponent*  CharacterMovement = GetCharacterMovement();
 	GetCharacterMovement()->MaxWalkSpeed = RealAttr->GetDefaultObject<UAttributes>()->Speed;
+	Cast<AMagUsPlayerController>(GetController())->SetInteractiveDistance(LockMaxDistance);
 }
 
 void AMagUsPlayerCharacter::RegenPlayer()
