@@ -2,7 +2,7 @@
 
 #include "MagUs.h"
 #include "MagUsAICharacter.h"
-#include "MagUsCharacter.h"
+#include "MagUsPlayerCharacter.h"
 #include "MagUsProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine.h"
@@ -43,18 +43,18 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Destroy();
 		return;
 	}
-	if (OtherActor->IsA(AMagUsProjectile::StaticClass()))
+/*	if (OtherActor->IsA(AMagUsProjectile::StaticClass()))
 	{
 		OtherActor->Destroy();
 		Destroy();
 		return;
 	}
-
+	*/
 
 	// Try to damage character
 	ACharacter* Character(Cast<AMagUsAICharacter>(OtherActor));	// Is Component an AI
 	if (!Character)
-		Character = (Cast<AMagUsCharacter>(OtherActor));		// Or is it the player
+		Character = (Cast<AMagUsPlayerCharacter>(OtherActor));		// Or is it the player
 	if (Character)
 	{
 		FDamageEvent damageEvent;
