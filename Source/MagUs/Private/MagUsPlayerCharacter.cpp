@@ -38,13 +38,13 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 	// Default offset from the character location for projectiles to spawn
 	ProjectileOffset = FVector(50.0f, 0.0f, 0.0f);
 
-	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
+	/*// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("CharacterMesh1P"));
 	Mesh1P->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
 	Mesh1P->AttachParent = FirstPersonCameraComponent;
 	Mesh1P->RelativeLocation = FVector(0.f, 0.f, -150.f);
 	Mesh1P->bCastDynamicShadow = false;
-	Mesh1P->CastShadow = false;
+	Mesh1P->CastShadow = false;*/
 
 	// Default Lock Distance (Random values, they are set in BP)
 	LockMaxDistance = 2500;
@@ -174,7 +174,7 @@ void AMagUsPlayerCharacter::LaunchShield()
 		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
 
 		FVector SocketLocationR;
-		SocketLocationR = Mesh1P->GetSocketLocation("WeaponR");
+		SocketLocationR = GetMesh()->GetSocketLocation("WeaponR");
 
 		// Set the instigator of the spell
 		FActorSpawnParameters SpawnParams;
@@ -184,7 +184,7 @@ void AMagUsPlayerCharacter::LaunchShield()
 		// Cast and spawn the spell
 		ManaPool->CastSpell(Spell);
 		AMagUsBuffDef* Shield = World->SpawnActor<AMagUsBuffDef>(Spell, SocketLocationR, SpawnRotation, SpawnParams);
-		Shield->AttachRootComponentTo(Mesh1P, FName(TEXT("WeaponPoint")), EAttachLocation::SnapToTarget); // Attach the root component of our Weapon actor to the ArmMesh at the location of the socket.
+		Shield->AttachRootComponentTo(GetMesh(), FName(TEXT("WeaponPoint")), EAttachLocation::SnapToTarget); // Attach the root component of our Weapon actor to the ArmMesh at the location of the socket.
 
 		//TODO : faire les init liés au Shield
 
