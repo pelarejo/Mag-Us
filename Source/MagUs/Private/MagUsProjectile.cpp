@@ -1,8 +1,8 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 
 #include "MagUs.h"
+#include "MagUsPlayerCharacter.h"
 #include "MagUsAICharacter.h"
-#include "MagUsCharacter.h"
 #include "MagUsProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine.h"
@@ -43,6 +43,8 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Destroy();
 		return;
 	}
+
+	// Destroy both Projectiles if collision between two of them 
 	if (OtherActor->IsA(AMagUsProjectile::StaticClass()))
 	{
 		OtherActor->Destroy();
@@ -50,15 +52,18 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		return;
 	}
 
-
-	// Try to damage character
-	ACharacter* Character(Cast<AMagUsAICharacter>(OtherActor));	// Is Component an AI
+	// Try to damage Caracter
+	ACharacter* Character(Cast<AMagUsAICharacter>(OtherActor));		// Is Component an AI
 	if (!Character)
-		Character = (Cast<AMagUsCharacter>(OtherActor));		// Or is it the player
+		Character = (Cast<AMagUsPlayerCharacter>(OtherActor));		// Or is it the player
 	if (Character)
 	{
 		FDamageEvent damageEvent;
 		Character->ApplyDamageMomentum(this->Damage, damageEvent, this->Instigator, this);
+
+		// Apply Debuf to the hit Character
+		AMagUsBuffOff* Debuf = GetWorld()->SpawnActor<AMagUsBuffOff>(DebufClass);
+		Debuf->SetTarget(Cast<AMagUsCharacter>(OtherActor));
 	}
 	// Only add impulse if we hit a physics
 	else if (OtherComp->IsSimulatingPhysics())

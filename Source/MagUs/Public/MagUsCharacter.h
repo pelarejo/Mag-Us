@@ -2,18 +2,27 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "Attributes.h"
-#include "Environnement.h"
 #include "MagUsBuffDef.h"
 #include "MagUsCharacter.generated.h"
 
 /* Gesture enum */
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
-enum class GestEnum
+enum class GestEnum : uint8
 {
-	CIRCLE,
-	SWIPE,
-	KEYTAP,
-	NONE
+	CIRCLE = 0,
+	SWIPE = 1,
+	KEYTAP = 2,
+	NONE = 3
+};
+
+UENUM(BlueprintType)
+enum class EManaType : uint8
+{
+	FIRE = 0, // CIRCLE
+	ICE = 1, // SWIPE
+	WIND = 2, // KEYTAP
+	POISON = 3, // NONE
+	NONE = 4
 };
 
 UCLASS(config=Game)
@@ -54,15 +63,5 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TSubclassOf<class UAttributes> RealAttr;
-
-	UPROPERTY()
-	AEnvironnement* ManaPool;
-
-public:
-	UFUNCTION(BlueprintCallable, Category = SpellManagement)
-	void setManaPool(AEnvironnement* mana_pool);
-
-	UFUNCTION(BlueprintCallable, Category = SpellManagement)
-	AEnvironnement* getManaPool();
 };
 

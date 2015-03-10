@@ -4,6 +4,7 @@
 #include "MagUsGameMode.h"
 #include "MagUsHUD.h"
 #include "MagUsCharacter.h"
+#include "Engine.h"
 #include "MagUsPlayerController.h"
 
 AMagUsGameMode::AMagUsGameMode(const FObjectInitializer& ObjectInitializer)
@@ -18,4 +19,21 @@ AMagUsGameMode::AMagUsGameMode(const FObjectInitializer& ObjectInitializer)
 
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassFinder(TEXT("/Game/Blueprints/MagUsController_BP"));
 	PlayerControllerClass = PlayerControllerClassFinder.Class;
+
+	// Load ManaPool BP with the characteristics of the environnement
+	static ConstructorHelpers::FClassFinder<AEnvironnement> EnvironnementClassFinder(TEXT("/Game/Blueprints/ManaPool"));
+	EnvironnementClass = EnvironnementClassFinder.Class;
+}
+
+void AMagUsGameMode::StartPlay()
+{
+	Super::StartPlay();
+	
+	// Spawn the ManaPool
+	ManaPool = GetWorld()->SpawnActor<AEnvironnement>(EnvironnementClass);
+}
+
+AEnvironnement* AMagUsGameMode::getManaPool()
+{
+	return ManaPool;
 }

@@ -1,6 +1,8 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
+
 #include "MagUsSpell.h"
+#include "MagUsBuffOff.h"
 #include "MagUsProjectile.generated.h"
 
 UCLASS(config=Game)
@@ -17,8 +19,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "false"))
 	class UProjectileMovementComponent* ProjectileMovement;
 
+	/** Damages of the Projectile */
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
 	float Damage;
+
+	/** Debuf that will be applied to the hit Character */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagment)
+	TSubclassOf<AMagUsBuffOff> DebufClass;
 
 public:
 	AMagUsProjectile(const FObjectInitializer& ObjectInitializer);

@@ -9,6 +9,8 @@
 #include "math.h"
 #include <iostream>
 #include "HeadMountedDisplay.h"
+#include "Environnement.h"
+#include "MagUsGameMode.h"
 #include "MagUsPlayerController.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -103,43 +105,48 @@ void AMagUsPlayerCharacter::OnFire()
 	// Get the right Spell to cast
 	TSubclassOf<class AMagUsProjectile> Spell = ProjectileArray[(int)this->spellType];
 
+	// Get the World
+	UWorld* const World = GetWorld();
+	if (!World)
+		return;
+
+	// Get the ManaPool from MagUsGameMode
+	AMagUsGameMode * GameMode = (AMagUsGameMode*)World->GetAuthGameMode();
+	AEnvironnement* ManaPool = GameMode->getManaPool();
+
 	// Check if the Spell can be cast
-	if (Spell && ManaPool->CanCast(Spell))
+	if (Spell && ManaPool && ManaPool->CanCast(Spell))
 	{
 		FRotator SpawnRotation = GetControlRotation();
 
 		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
 		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
 
-		UWorld* const World = GetWorld();
-		if (World != NULL)
-		{
-			// Set the instigator of the spell
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = Instigator;
+		// Set the instigator of the spell
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = Instigator;
 
-			// Cast and spawn the spell
-			ManaPool->CastSpell(Spell);
-			AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(Spell, SpawnLocation, SpawnRotation, SpawnParams);
-			Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
+		// Cast and spawn the spell
+		ManaPool->CastSpell(Spell);
+		AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(Spell, SpawnLocation, SpawnRotation, SpawnParams);
+		Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
+
+		// try and play the sound if specified
+		if (FireSound != NULL)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 		}
-	}
 
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
+		// try and play a firing animation if specified
+		if (FireAnimation != NULL)
 		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			// Get the animation object for the arms mesh
+			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+			if (AnimInstance != NULL)
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
 		}
 	}
 }
@@ -149,48 +156,53 @@ void AMagUsPlayerCharacter::LaunchShield()
 	// Get the right Spell to cast
 	TSubclassOf<class AMagUsBuffDef> Spell = ShieldArray[(int)this->spellType];
 
+	// Get the World
+	UWorld* const World = GetWorld();
+	if (!World)
+		return;
+
+	// Get the ManaPool from MagUsGameMode
+	AMagUsGameMode * GameMode = (AMagUsGameMode*)World->GetAuthGameMode();
+	AEnvironnement* ManaPool = GameMode->getManaPool();
+
 	// Check if the Spell can be cast
-	if (Spell && ManaPool->CanCast(Spell))
+	if (Spell && ManaPool && ManaPool->CanCast(Spell))
 	{
 		FRotator SpawnRotation = GetControlRotation();
 
 		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
 		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
 
-		UWorld* const World = GetWorld();
-		if (World != NULL)
+		FVector SocketLocationR;
+		SocketLocationR = Mesh1P->GetSocketLocation("WeaponR");
+
+		// Set the instigator of the spell
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = Instigator;
+
+		// Cast and spawn the spell
+		ManaPool->CastSpell(Spell);
+		AMagUsBuffDef* Shield = World->SpawnActor<AMagUsBuffDef>(Spell, SocketLocationR, SpawnRotation, SpawnParams);
+		Shield->AttachRootComponentTo(Mesh1P, FName(TEXT("WeaponPoint")), EAttachLocation::SnapToTarget); // Attach the root component of our Weapon actor to the ArmMesh at the location of the socket.
+
+		//TODO : faire les init liés au Shield
+
+		// try and play the sound if specified
+		if (FireSound != NULL)
 		{
-			FVector SocketLocationR;
-			SocketLocationR = Mesh1P->GetSocketLocation("WeaponR");
-
-			// Set the instigator of the spell
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = Instigator;
-
-			// Cast and spawn the spell
-			ManaPool->CastSpell(Spell);
-			AMagUsBuffDef* Shield = World->SpawnActor<AMagUsBuffDef>(Spell, SocketLocationR, SpawnRotation, SpawnParams);
-			Shield->AttachRootComponentTo(Mesh1P, FName(TEXT("WeaponPoint")), EAttachLocation::SnapToTarget); // Attach the root component of our Weapon actor to the ArmMesh at the location of the socket.
-
-			//TODO : faire les init liés au Shield
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 		}
-	}
 
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
+		// try and play a firing animation if specified
+		if (FireAnimation != NULL)
 		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			// Get the animation object for the arms mesh
+			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+			if (AnimInstance != NULL)
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
 		}
 	}
 }
@@ -494,6 +506,10 @@ void AMagUsPlayerCharacter::BeginPlay()
 
 void AMagUsPlayerCharacter::RegenPlayer()
 {
+	float res = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth - Health;
+
+	//Health += Min(res, RealAttr->GetDefaultObject<UAttributes>()->Regeneration);
+
 	Health += RealAttr->GetDefaultObject<UAttributes>()->Regeneration;
 	if (Health > RealAttr->GetDefaultObject<UAttributes>()->MaxHealth)
 		Health = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth;
