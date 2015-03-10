@@ -54,6 +54,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimMontage* FireAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	class UAnimSequence* FireAnimation2;
+
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int32 Health = 100;

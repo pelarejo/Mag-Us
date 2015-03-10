@@ -52,7 +52,7 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		return;
 	}
 
-	// Try to damage Caracter
+	// Try to damage Character
 	ACharacter* Character(Cast<AMagUsAICharacter>(OtherActor));		// Is Component an AI
 	if (!Character)
 		Character = (Cast<AMagUsPlayerCharacter>(OtherActor));		// Or is it the player
@@ -62,8 +62,11 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Character->ApplyDamageMomentum(this->Damage, damageEvent, this->Instigator, this);
 
 		// Apply Debuf to the hit Character
-		AMagUsBuffOff* Debuf = GetWorld()->SpawnActor<AMagUsBuffOff>(DebufClass);
-		Debuf->SetTarget(Cast<AMagUsCharacter>(OtherActor));
+		if (DebufClass)
+		{
+			AMagUsBuffOff* Debuf = GetWorld()->SpawnActor<AMagUsBuffOff>(DebufClass);
+			Debuf->SetTarget(Cast<AMagUsCharacter>(OtherActor));
+		}
 	}
 	// Only add impulse if we hit a physics
 	else if (OtherComp->IsSimulatingPhysics())
