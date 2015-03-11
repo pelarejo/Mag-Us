@@ -6,6 +6,8 @@
 #include "MagUsSpell.h"
 #include "Environnement.generated.h"
 
+#define  MIN(a,b) ((a) < (b) ? (a) : (b))
+
 /**
  * 
  */
@@ -17,21 +19,21 @@ class MAGUS_API AEnvironnement : public AActor
 public:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	float MaxMana;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
+	TArray<float> MaxMana;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	float CurrentMana;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
+	TArray<float> CurrentMana;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	float Regen;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
+	float RegenPercent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
 	float RegenRate;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = SpellManagement)
-	void ChangeLevel(float NewMaxMana);
+	UFUNCTION(BlueprintCallable, Category = Gameplay)
+	void ChangeLevel(TArray<float> NewMaxMana);
 
 	UFUNCTION(BlueprintCallable, Category = SpellManagement)
 	bool CanCast(TSubclassOf<AMagUsSpell> Spell);
@@ -40,5 +42,7 @@ public:
 	void CastSpell(TSubclassOf<AMagUsSpell> Spell);
 
 private:
+	TArray<float> Regen;
+
 	void RegenMana();
 };

@@ -8,6 +8,7 @@ AMagUsBuffOffPoison::AMagUsBuffOffPoison(const FObjectInitializer& ObjectInitial
 : Super(ObjectInitializer)
 {
 	InitialLifeSpan = 10.0f;
+	Type = EManaType::POISON;
 }
 
 void AMagUsBuffOffPoison::BeginPlay()

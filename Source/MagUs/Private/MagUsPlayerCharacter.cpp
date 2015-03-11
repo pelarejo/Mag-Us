@@ -506,11 +506,7 @@ void AMagUsPlayerCharacter::BeginPlay()
 
 void AMagUsPlayerCharacter::RegenPlayer()
 {
-	float res = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth - Health;
+	float diffHealth = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth - Health;
 
-	//Health += Min(res, RealAttr->GetDefaultObject<UAttributes>()->Regeneration);
-
-	Health += RealAttr->GetDefaultObject<UAttributes>()->Regeneration;
-	if (Health > RealAttr->GetDefaultObject<UAttributes>()->MaxHealth)
-		Health = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth;
+	Health += MIN(diffHealth, RealAttr->GetDefaultObject<UAttributes>()->Regeneration);
 }
