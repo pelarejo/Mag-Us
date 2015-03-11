@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "MagUs.h"
+#include "MagUsBuffOff.h"
 #include "MagUsCharacter.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -10,12 +11,12 @@ AMagUsCharacter::AMagUsCharacter(const FObjectInitializer& ObjectInitializer)
 {
 }
 
-void AMagUsCharacter::setManaPool(AEnvironnement* mana_pool)
+void AMagUsCharacter::AddDebuff(AMagUsBuffOff* debuff)
 {
-	ManaPool = mana_pool;
+	Debuffs.Push(debuff);
 }
 
-AEnvironnement* AMagUsCharacter::getManaPool()
+void AMagUsCharacter::RemoveDebuff(AMagUsBuffOff* debuff)
 {
-	return ManaPool;
+	Debuffs.Push(debuff);
 }

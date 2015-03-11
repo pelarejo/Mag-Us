@@ -2,19 +2,30 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "Attributes.h"
-#include "Environnement.h"
 #include "MagUsBuffDef.h"
 #include "MagUsCharacter.generated.h"
 
 /* Gesture enum */
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
-enum class GestEnum
+enum class GestEnum : uint8
 {
-	CIRCLE,
-	SWIPE,
-	KEYTAP,
-	NONE
+	CIRCLE = 0,
+	SWIPE = 1,
+	KEYTAP = 2,
+	NONE = 3
 };
+
+UENUM(BlueprintType)
+enum class EManaType : uint8
+{
+	FIRE = 0, // CIRCLE
+	ICE = 1, // SWIPE
+	POISON = 2, // KEYTAP
+	WIND = 3, // NONE
+	NONE = 4
+};
+
+class AMagUsBuffOff;
 
 UCLASS(config=Game)
 class AMagUsCharacter : public ACharacter
@@ -24,6 +35,11 @@ class AMagUsCharacter : public ACharacter
 public:
 	AMagUsCharacter(const FObjectInitializer& ObjectInitializer);
 
+	void AddDebuff(AMagUsBuffOff* debuff);
+
+	UFUNCTION(BlueprintCallable, Category = SpellManagement)
+	void RemoveDebuff(AMagUsBuffOff* debuff);
+
 protected:
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = SpellManagement)
@@ -32,6 +48,10 @@ protected:
 	/** Shield class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = SpellManagement)
 	TSubclassOf<class AMagUsBuffDef> ShieldArray[4];
+
+	/** Array of Debuff in the Character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SpellManagement)
+	TArray<AMagUsBuffOff*> Debuffs;
 
 	/** Location for projectiles to spawn */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -58,15 +78,5 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TSubclassOf<class UAttributes> RealAttr;
-
-	UPROPERTY()
-	AEnvironnement* ManaPool;
-
-public:
-	UFUNCTION(BlueprintCallable, Category = SpellManagement)
-	void setManaPool(AEnvironnement* mana_pool);
-
-	UFUNCTION(BlueprintCallable, Category = SpellManagement)
-	AEnvironnement* getManaPool();
 };
 

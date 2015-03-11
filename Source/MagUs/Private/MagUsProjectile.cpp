@@ -1,8 +1,8 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 
 #include "MagUs.h"
-#include "MagUsAICharacter.h"
 #include "MagUsPlayerCharacter.h"
+#include "MagUsAICharacter.h"
 #include "MagUsProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine.h"
@@ -43,22 +43,32 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Destroy();
 		return;
 	}
-/*	if (OtherActor->IsA(AMagUsProjectile::StaticClass()))
+
+	// Destroy both Projectiles if collision between two of them 
+	if (OtherActor->IsA(AMagUsProjectile::StaticClass()))
 	{
 		OtherActor->Destroy();
 		Destroy();
 		return;
 	}
-	*/
 
-	// Try to damage character
-	ACharacter* Character(Cast<AMagUsAICharacter>(OtherActor));	// Is Component an AI
+	// Try to damage Character
+	ACharacter* Character(Cast<AMagUsAICharacter>(OtherActor));		// Is Component an AI
 	if (!Character)
 		Character = (Cast<AMagUsPlayerCharacter>(OtherActor));		// Or is it the player
 	if (Character)
 	{
 		FDamageEvent damageEvent;
 		Character->ApplyDamageMomentum(this->Damage, damageEvent, this->Instigator, this);
+
+		// Apply Debuf to the hit Character
+		if (DebuffClass)
+		{
+			AMagUsBuffOff* Debuff = GetWorld()->SpawnActor<AMagUsBuffOff>(DebuffClass);
+			Debuff->SetTarget(Cast<AMagUsCharacter>(OtherActor));
+			Debuff->AttachRootComponentTo(Character->GetMesh(), FName(TEXT("pelvis")), EAttachLocation::SnapToTarget); // Attach the root component of the Debuff to the hit Character at the location of the pelvis socket.
+			Cast<AMagUsCharacter>(Character)->AddDebuff(Debuff);
+		}
 	}
 	// Only add impulse if we hit a physics
 	else if (OtherComp->IsSimulatingPhysics())

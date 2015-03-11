@@ -9,7 +9,6 @@ void AEnvironnement::BeginPlay()
 {
 	FTimerManager& WorldTimerManager = GetWorldTimerManager();
 	WorldTimerManager.SetTimer(this, &AEnvironnement::RegenMana, RegenRate, true);
-	CurrentMana = 10;
 }
 
 void AEnvironnement::ChangeLevel(float NewMaxMana)
@@ -26,12 +25,10 @@ void AEnvironnement::RegenMana()
 
 bool AEnvironnement::CanCast(TSubclassOf<AMagUsSpell> Spell)
 {
-	//return (CurrentMana >= Spell->GetDefaultObject<AMagUsProjectile>()->ManaCost);
-	//CurrentMana = 10;
-	return (true);
+	return (CurrentMana >= Spell->GetDefaultObject<AMagUsProjectile>()->ManaCost);
 }
 
 void AEnvironnement::CastSpell(TSubclassOf<AMagUsSpell> Spell)
 {
-	//CurrentMana -= Spell->GetDefaultObject<AMagUsProjectile>()->ManaCost;
+	CurrentMana -= Spell->GetDefaultObject<AMagUsProjectile>()->ManaCost;
 }
