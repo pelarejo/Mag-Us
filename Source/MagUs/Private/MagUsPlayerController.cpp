@@ -54,7 +54,9 @@ FInteractive AMagUsPlayerController::TraceFromCamera(const uint32 Collisions) {
 }
 
 FVector AMagUsPlayerController::FindCrosshairPosition() {
-	TraceFromCamera(ECC_TO_BITFIELD(ECC_PhysicsBody) | ECC_TO_BITFIELD(ECC_Pawn));
+	TraceFromCamera(ECC_TO_BITFIELD(ECC_WorldStatic)
+				| ECC_TO_BITFIELD(ECC_Pawn)
+				| ECC_TO_BITFIELD(ECC_PhysicsBody));
 //	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, OutHit.Location.ToString());
 	return OutHit.Location;
 }
