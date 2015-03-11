@@ -62,10 +62,12 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Character->ApplyDamageMomentum(this->Damage, damageEvent, this->Instigator, this);
 
 		// Apply Debuf to the hit Character
-		if (DebufClass)
+		if (DebuffClass)
 		{
-			AMagUsBuffOff* Debuf = GetWorld()->SpawnActor<AMagUsBuffOff>(DebufClass);
-			Debuf->SetTarget(Cast<AMagUsCharacter>(OtherActor));
+			AMagUsBuffOff* Debuff = GetWorld()->SpawnActor<AMagUsBuffOff>(DebuffClass);
+			Debuff->SetTarget(Cast<AMagUsCharacter>(OtherActor));
+			Debuff->AttachRootComponentTo(Character->GetMesh(), FName(TEXT("pelvis")), EAttachLocation::SnapToTarget); // Attach the root component of the Debuff to the hit Character at the location of the pelvis socket.
+			Cast<AMagUsCharacter>(Character)->AddDebuff(Debuff);
 		}
 	}
 	// Only add impulse if we hit a physics

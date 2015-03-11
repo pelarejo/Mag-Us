@@ -25,7 +25,7 @@ protected:
 
 	/** Debuf that will be applied to the hit Character */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagment)
-	TSubclassOf<AMagUsBuffOff> DebufClass;
+	TSubclassOf<AMagUsBuffOff> DebuffClass;
 
 public:
 	AMagUsProjectile(const FObjectInitializer& ObjectInitializer);

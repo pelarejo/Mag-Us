@@ -25,6 +25,8 @@ enum class EManaType : uint8
 	NONE = 4
 };
 
+class AMagUsBuffOff;
+
 UCLASS(config=Game)
 class AMagUsCharacter : public ACharacter
 {
@@ -32,6 +34,11 @@ class AMagUsCharacter : public ACharacter
 
 public:
 	AMagUsCharacter(const FObjectInitializer& ObjectInitializer);
+
+	void AddDebuff(AMagUsBuffOff* debuff);
+
+	UFUNCTION(BlueprintCallable, Category = SpellManagement)
+	void RemoveDebuff(AMagUsBuffOff* debuff);
 
 protected:
 	/** Projectile class to spawn */
@@ -41,6 +48,10 @@ protected:
 	/** Shield class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = SpellManagement)
 	TSubclassOf<class AMagUsBuffDef> ShieldArray[4];
+
+	/** Array of Debuff in the Character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SpellManagement)
+	TArray<AMagUsBuffOff*> Debuffs;
 
 	/** Location for projectiles to spawn */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
