@@ -71,7 +71,14 @@ void AMagUsHUD::DrawCrosshairPosition() {
 void AMagUsHUD::DrawVrCrosshairPosition() {
 	AMagUsPlayerController* PC = CastChecked<AMagUsPlayerController>(GetOwningPlayerController());
 	FVector ActorLocation = PC->PlayerCameraManager->GetCameraLocation();
-	FVector Position = PC->FindCrosshairPosition();
+	FVector Position;
+
+	if (bUseLockedActorPosition == true) {
+		Position = LockedActorPosition;
+	}
+	else {
+		Position = PC->FindCrosshairPosition();
+	}
 	Position = Position + 0.2f * (ActorLocation - Position); // So that there is no clipping
 	VrCrosshair->SetPosition(Position);
 }
