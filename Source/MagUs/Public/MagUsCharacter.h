@@ -20,8 +20,8 @@ enum class EManaType : uint8
 {
 	FIRE = 0, // CIRCLE
 	ICE = 1, // SWIPE
-	WIND = 2, // KEYTAP
-	POISON = 3, // NONE
+	POISON = 2, // KEYTAP
+	WIND = 3, // NONE
 	NONE = 4
 };
 
