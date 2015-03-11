@@ -350,7 +350,7 @@ void AMagUsPlayerCharacter::LockReleased() {
 void AMagUsPlayerCharacter::OnLock() {
 	AMagUsPlayerController* PC = Cast<AMagUsPlayerController>(GetController());
 	check(PC);
-	FInteractive Inter = PC->GetInteractive();
+	FInteractive Inter = PC->TraceFromCamera(ECC_Pawn);
 	if (Inter.Actor != NULL) {
 		LockedActor = Inter.Actor;
 	}

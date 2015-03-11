@@ -24,13 +24,18 @@ public:
 	AMagUsPlayerController(const FObjectInitializer& ObjectInitializer);
 
 	void SetInteractiveDistance(int32 Distance);
-	FInteractive GetInteractive();
+	FInteractive TraceFromCamera(const ECollisionChannel Collision);
+	FInteractive TraceFromCamera(const uint32 Collisions);
+
+	FVector FindCrosshairPosition();
 
 protected:
 	void BeginPlay();
-	void Tick(float DeltaSeconds);
+	void Tick(float DeltaSeconds) override;
 
 private:
+	static const float CurrentSP;
 	FVector HMDWorldLocation;
 	int32 InteractionDistance;
+	FHitResult OutHit;
 };
