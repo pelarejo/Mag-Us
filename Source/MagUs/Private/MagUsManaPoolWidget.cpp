@@ -21,8 +21,9 @@ void AMagUsManaPoolWidget::CreateUserWidget(AMagUsPlayerController* PC) {
 	WidgetInstance->SetRenderScale(FVector2D(1.0f, 0.3f));
 	HideWidget();
 
-	//Widget3DActor = GetWorld()->SpawnActor<AActor>(Widget3DTemplate);
-	//Widget3DActor->SetActorHiddenInGame(true);
+	Widget3DActor = GetWorld()->SpawnActor<AActor>(Widget3DTemplate);
+	Widget3DActor->SetActorScale3D(FVector(0.02f, 0.01f, 0.05f));
+	Widget3DActor->AttachRootComponentTo(PC->GetCharacter()->GetMesh(), "hand_lSocket");
 }
 
 void AMagUsManaPoolWidget::ShowWidget() {
@@ -33,12 +34,15 @@ void AMagUsManaPoolWidget::HideWidget() {
 	WidgetInstance->SetVisibility(ESlateVisibility::Hidden);
 }
 
+//Not used since attached to socket
 void AMagUsManaPoolWidget::Set3DWidgetLocation(const FVector& Location) {
-	//Widget3DActor->SetActorLocation(Location);
+	//FVector Loc = Location - 2 * Widget3DActor->GetActorForwardVector();
+	//Widget3DActor->SetActorLocation(Loc);
 }
 
+//Not used since attached to socket
 void AMagUsManaPoolWidget::Set3DWidgetRotation(const FVector& Rotation) {
-	FMatrix Mat = FRotationMatrix::MakeFromZ(Rotation);
+	//FMatrix Mat = FRotationMatrix::MakeFromZ(Rotation);
 	//Widget3DActor->SetActorRotation(Mat.Rotator());
 }
 
