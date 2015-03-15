@@ -109,7 +109,7 @@ void AMagUsPlayerCharacter::OnFire()
 	UWorld* const World = GetWorld();
 	if (!World)
 		return;
-
+	
 	// Get the ManaPool from MagUsGameMode
 	AMagUsGameMode * GameMode = (AMagUsGameMode*)World->GetAuthGameMode();
 	AEnvironnement* ManaPool = GameMode->getManaPool();
@@ -404,11 +404,20 @@ void AMagUsPlayerCharacter::InLock_Tick(float DeltaSeconds) {
 	}
 }
 
+void AMagUsPlayerCharacter::HUD_Tick(float DeltaSeconds) {
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	FVector HandLocation = GetMesh()->GetBoneLocation(FName("hand_l"));
+	FVector ZAxis = GetMesh()->GetBoneAxis("hand_l", EAxis::Z);
+	//	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, HandLocation.ToString());
+	Cast<AMagUsHUD>(PC->GetHUD())->SetVrManaPoolPositionRotation(HandLocation, ZAxis);
+}
+
 void AMagUsPlayerCharacter::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	if (LockedActor != NULL) {
 		InLock_Tick(DeltaSeconds);
 	}
+	HUD_Tick(DeltaSeconds);
 }
 
 // Detect if out of camera view using angle && render time (* 2 for float margin of error)

@@ -76,6 +76,8 @@ protected:
 	void OffLock();
 	void InLock_Tick(float DeltaSeconds);
 
+	void HUD_Tick(float DeltaSeconds);
+
 	/** Get gesture type **/
 	UFUNCTION(BlueprintCallable, Category = "SpellManagement")
 	GestEnum getGestureType(FString gest);

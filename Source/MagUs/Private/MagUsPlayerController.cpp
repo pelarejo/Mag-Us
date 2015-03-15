@@ -2,6 +2,7 @@
 
 #include "MagUs.h"
 #include "MagUsPlayerController.h"
+#include "MagUsHUD.h"
 #include "Engine.h"
 
 const float AMagUsPlayerController::CurrentSP = 90.0f;

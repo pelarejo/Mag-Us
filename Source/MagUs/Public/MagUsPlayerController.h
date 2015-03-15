@@ -3,6 +3,8 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
+#include "Runtime/UMG/Public/UMG.h"
+#include "SlateBasics.h"
 #include "MagUsPlayerController.generated.h"
 
 /**

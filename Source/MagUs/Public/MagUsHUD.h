@@ -2,6 +2,7 @@
 #pragma once 
 #include "GameFramework/HUD.h"
 #include "MagUsVrCrosshair.h"
+#include "MagUsManaPoolWidget.h"
 #include "MagUsHUD.generated.h"
 
 UCLASS()
@@ -17,9 +18,11 @@ public:
 
 	void ResetDefaultCrosshairPosition();
 	void SetCrosshairPosition(const FVector& Position);
+	void SetVrManaPoolPositionRotation(const FVector& Position, const FVector& Rotation);
 
 protected:
 	void BeginPlay() override;
+	void Tick(float DeltaSeconds) override;
 
 	void DrawCrosshairPosition();
 	void DrawVrCrosshairPosition();
@@ -31,6 +34,9 @@ private:
 	bool bUseLockedActorPosition;
 	FVector LockedActorPosition;
 
+	bool bDraw3DHUD;
+
 	AMagUsVrCrosshair* VrCrosshair;
+	AMagUsManaPoolWidget* ManaWidget;
 };
 

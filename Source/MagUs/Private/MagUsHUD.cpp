@@ -16,13 +16,13 @@ AMagUsHUD::AMagUsHUD(const FObjectInitializer& ObjectInitializer) : Super(Object
 	CrosshairTex = CrosshairTexObj.Object;
 
 	bUseLockedActorPosition = false;
+	bDraw3DHUD = false;
 }
 
 void AMagUsHUD::DrawHUD()
 {
 	Super::DrawHUD();
-	check(GEngine);
-	if (GEngine->IsStereoscopic3D()){
+	if (bDraw3DHUD == true){
 		DrawVrCrosshairPosition();
 	}
 	else {
@@ -34,9 +34,6 @@ void AMagUsHUD::ResetDefaultCrosshairPosition() {
 	bUseLockedActorPosition = false;
 }
 
-/**
-**
-*/
 void AMagUsHUD::SetCrosshairPosition(const FVector& Position) {
 	LockedActorPosition.X = Position.X;
 	LockedActorPosition.Y = Position.Y;
@@ -44,10 +41,27 @@ void AMagUsHUD::SetCrosshairPosition(const FVector& Position) {
 	bUseLockedActorPosition = true;
 }
 
+void AMagUsHUD::SetVrManaPoolPositionRotation(const FVector& Position, const FVector& Rotation) {
+	ManaWidget->Set3DWidgetLocation(Position);
+	ManaWidget->Set3DWidgetRotation(Rotation);
+}
+
 void AMagUsHUD::BeginPlay() {
 	Super::BeginPlay();
 	VrCrosshair = GetWorld()->SpawnActor<AMagUsVrCrosshair>();
 	VrCrosshair->SetTexture(CrosshairTex);
+	
+	ManaWidget = GetWorld()->SpawnActor<AMagUsManaPoolWidget>();
+	AMagUsPlayerController* PC = CastChecked<AMagUsPlayerController>(GetOwningPlayerController());
+	ManaWidget->CreateUserWidget(PC);
+	ManaWidget->ShowWidget();
+}
+
+void AMagUsHUD::Tick(float DeltaSeconds) {
+	if (GEngine != NULL && GEngine->IsStereoscopic3D() != bDraw3DHUD) {
+		bDraw3DHUD = GEngine->IsStereoscopic3D();
+		(bDraw3DHUD == true) ? ManaWidget->HideWidget() : ManaWidget->ShowWidget();
+	}
 }
 
 void AMagUsHUD::DrawCrosshairPosition() {
