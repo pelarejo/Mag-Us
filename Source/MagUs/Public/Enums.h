@@ -11,7 +11,8 @@ enum class GestEnum : uint8
 	CIRCLE = 0,
 	SWIPE = 1,
 	KEYTAP = 2,
-	NONE = 3
+	LEFTHAND = 3,
+	NONE = 4
 };
 
 /* Mana Type enum */

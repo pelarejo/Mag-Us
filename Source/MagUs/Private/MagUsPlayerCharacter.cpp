@@ -533,12 +533,19 @@ GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 			this->OnFire();
 			return GestEnum::KEYTAP;
 		}
-		else
+		else if (gest == "Swipe")
 		{
 			this->spellType = GestEnum::SWIPE;
 			this->OnFire();
 			return GestEnum::SWIPE;
 		}
+		else if (gest == "POISON")
+		{
+			this->spellType = GestEnum::LEFTHAND;
+			this->OnFire();
+			return GestEnum::LEFTHAND;
+		}
+		return (GestEnum::NONE);
 	}
 	return (GestEnum::NONE);
 }
