@@ -8,7 +8,7 @@ AMagUsManaPoolWidget::AMagUsManaPoolWidget(const FObjectInitializer& ObjInit)
 	USceneComponent* SceneComponent = ObjInit.CreateDefaultSubobject<USceneComponent>(this, TEXT("RootScene"));
 	RootComponent = SceneComponent;
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> WidgBP(TEXT("/Game/Blueprints/UI/ManaPoolWidget_BP"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> WidgBP(TEXT("/Game/Blueprints/UI/ManaPoolWidget_BP2"));
 	WidgetTemplate = WidgBP.Class;
 
 	static ConstructorHelpers::FClassFinder<AActor> WidgActorBP(TEXT("/Game/Blueprints/UI/ManaPoolWidgetActor_BP"));
@@ -18,7 +18,6 @@ AMagUsManaPoolWidget::AMagUsManaPoolWidget(const FObjectInitializer& ObjInit)
 void AMagUsManaPoolWidget::CreateUserWidget(AMagUsPlayerController* PC) {
 	WidgetInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetTemplate);
 	WidgetInstance->AddToViewport();
-	WidgetInstance->SetRenderScale(FVector2D(1.0f, 0.3f));
 	HideWidget();
 
 	Widget3DActor = GetWorld()->SpawnActor<AActor>(Widget3DTemplate);
