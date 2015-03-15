@@ -21,12 +21,12 @@ void AMagUsManaPoolWidget::CreateUserWidget(AMagUsPlayerController* PC) {
 	WidgetInstance->SetRenderScale(FVector2D(1.0f, 0.3f));
 	HideWidget();
 
-	Widget3DActor = GetWorld()->SpawnActor<AActor>(Widget3DTemplate);
-	Widget3DActor->SetActorHiddenInGame(true);
+	//Widget3DActor = GetWorld()->SpawnActor<AActor>(Widget3DTemplate);
+	//Widget3DActor->SetActorHiddenInGame(true);
 }
 
 void AMagUsManaPoolWidget::ShowWidget() {
-//	WidgetInstance->SetVisibility(ESlateVisibility::Visible);
+	WidgetInstance->SetVisibility(ESlateVisibility::Visible);
 }
 
 void AMagUsManaPoolWidget::HideWidget() {
@@ -34,12 +34,12 @@ void AMagUsManaPoolWidget::HideWidget() {
 }
 
 void AMagUsManaPoolWidget::Set3DWidgetLocation(const FVector& Location) {
-	Widget3DActor->SetActorLocation(Location);
+	//Widget3DActor->SetActorLocation(Location);
 }
 
 void AMagUsManaPoolWidget::Set3DWidgetRotation(const FVector& Rotation) {
 	FMatrix Mat = FRotationMatrix::MakeFromZ(Rotation);
-	Widget3DActor->SetActorRotation(Mat.Rotator());
+	//Widget3DActor->SetActorRotation(Mat.Rotator());
 }
 
 void AMagUsManaPoolWidget::BeginPlay() {
