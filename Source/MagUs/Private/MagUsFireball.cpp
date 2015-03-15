@@ -9,8 +9,6 @@
 
 AMagUsFireball::AMagUsFireball(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	// Fireball's damage
-	SetDamage(20000000000.0f);
 }
 
 

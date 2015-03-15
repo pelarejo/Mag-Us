@@ -109,7 +109,8 @@ protected:
 	bool IsLockedActorWithinDistance();
 
 	void ResetHMD();
-
+	void ToggleMenu();
+	void MenuClick();
 
 	bool DoubleTapDigital(float Value);
 	bool DoubleTapAnalog(float Rate);
@@ -142,5 +143,8 @@ public:
 
 private:
 	FORCEINLINE void Timer_DoubleTapReset();
+//
+	UClass		*UCMagUsController;
+	bool		isMenuOpen;
 };
 

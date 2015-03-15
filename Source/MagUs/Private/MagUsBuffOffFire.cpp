@@ -8,6 +8,7 @@ AMagUsBuffOffFire::AMagUsBuffOffFire(const FObjectInitializer& ObjectInitializer
 	: Super(ObjectInitializer)
 {
 	InitialLifeSpan = 5.0f;
+	Type = EManaType::FIRE;
 }
 
 void AMagUsBuffOffFire::BeginPlay()

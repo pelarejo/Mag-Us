@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "Enums.h"
 #include "MagUsSpell.generated.h"
 
 /**
@@ -18,6 +19,9 @@ public:
 	//AMagUsSpell();
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
 	float ManaCost;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SpellManagement)
+	EManaType Type;
 };

@@ -56,6 +56,15 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	this->canAttack = true;
+
+
+	//To get function for blueprint
+	static ConstructorHelpers::FObjectFinder<UBlueprint> BPMagUsController(TEXT("Blueprint'/Game/Blueprints/MagUsController_BP.MagUsController_BP'"));
+	if (BPMagUsController.Object != NULL)
+	{
+		UCMagUsController = Cast<UClass>(BPMagUsController.Object->GeneratedClass);
+	}
+	isMenuOpen = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -77,6 +86,7 @@ void AMagUsPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Inp
 	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsPlayerCharacter::LockReleased);
 
 	InputComponent->BindAction("ResetHMDPosition", IE_Pressed, this, &AMagUsPlayerCharacter::ResetHMD);
+	InputComponent->BindAction("ToggleMenu", IE_Pressed, this, &AMagUsPlayerCharacter::ToggleMenu);
 
 	// Axis
 	InputComponent->BindAxis("MoveForward", this, &AMagUsPlayerCharacter::MoveForward);
@@ -349,9 +359,46 @@ void AMagUsPlayerCharacter::ResetHMD() {
 	}
 }
 
+void AMagUsPlayerCharacter::MenuClick() {
+	AMagUsPlayerController* PC = Cast<AMagUsPlayerController>(GetController());
+	check(PC);
+	FInteractive Inter = PC->TraceFromCamera(ECC_Pawn);
+	if (Inter.bHitInteractive == true)
+	{
+		if (UCMagUsController)
+		{
+			UFunction *func = UCMagUsController->FindFunctionByName("MenuClick");
+			if (func != NULL)
+			{
+				AMagUsPlayerController* PC = Cast<AMagUsPlayerController>(GetController());
+				FString sname = Inter.Component->GetFName().GetPlainNameString();
+				PC->ProcessEvent(func, &sname);
+			}
+		}
+	}
+}
+
+void AMagUsPlayerCharacter::ToggleMenu() {
+	if (UCMagUsController)
+	{
+		UFunction *func = UCMagUsController->FindFunctionByName("ToggleMenu");
+		if (func != NULL)
+		{
+			AMagUsPlayerController* PC = Cast<AMagUsPlayerController>(GetController());
+			PC->ProcessEvent(func, NULL);
+			isMenuOpen = true;
+		}
+	}
+}
+
 void AMagUsPlayerCharacter::LockPressed() {
-	bLockedPressed = true;
-	OnLock();
+	if (isMenuOpen == true)
+		MenuClick();
+	else
+	{
+		bLockedPressed = true;
+		OnLock();
+	}
 }
 
 void AMagUsPlayerCharacter::LockReleased() {
@@ -363,9 +410,9 @@ void AMagUsPlayerCharacter::OnLock() {
 	AMagUsPlayerController* PC = Cast<AMagUsPlayerController>(GetController());
 	check(PC);
 	FInteractive Inter = PC->TraceFromCamera(ECC_Pawn);
-	if (Inter.Actor != NULL) {
-		LockedActor = Inter.Actor;
-	}
+		if (Inter.Actor != NULL) {
+			LockedActor = Inter.Actor;
+		}
 }
 
 void AMagUsPlayerCharacter::OffLock() {
@@ -496,7 +543,7 @@ GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 	return (GestEnum::NONE);
 }
 
-	void AMagUsPlayerCharacter::Timer_DoubleTapReset() {
+void AMagUsPlayerCharacter::Timer_DoubleTapReset() {
 	DoubleTap = EDoubleTap::DT_Reset;
 }
 
@@ -515,11 +562,7 @@ void AMagUsPlayerCharacter::BeginPlay()
 
 void AMagUsPlayerCharacter::RegenPlayer()
 {
-	float res = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth - Health;
+	float diffHealth = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth - Health;
 
-	//Health += Min(res, RealAttr->GetDefaultObject<UAttributes>()->Regeneration);
-
-	Health += RealAttr->GetDefaultObject<UAttributes>()->Regeneration;
-	if (Health > RealAttr->GetDefaultObject<UAttributes>()->MaxHealth)
-		Health = RealAttr->GetDefaultObject<UAttributes>()->MaxHealth;
+	Health += MIN(diffHealth, RealAttr->GetDefaultObject<UAttributes>()->Regeneration);
 }
