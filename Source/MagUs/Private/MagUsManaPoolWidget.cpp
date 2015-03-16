@@ -22,7 +22,8 @@ void AMagUsManaPoolWidget::CreateUserWidget(AMagUsPlayerController* PC) {
 
 	Widget3DActor = GetWorld()->SpawnActor<AActor>(Widget3DTemplate);
 	Widget3DActor->SetActorScale3D(FVector(0.02f, 0.01f, 0.05f));
-	Widget3DActor->AttachRootComponentTo(PC->GetCharacter()->GetMesh(), "hand_lSocket");
+	Widget3DActor->AttachRootComponentTo(PC->GetCharacter()->GetMesh(), "hand_rSocket");
+	Widget3DActor->SetActorRelativeRotation(FRotator(0, 0, 180));
 }
 
 void AMagUsManaPoolWidget::ShowWidget() {
