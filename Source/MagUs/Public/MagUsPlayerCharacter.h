@@ -48,6 +48,7 @@ public:
 
 	clock_t last = clock();
 	bool canAttack;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=SpellManagement)
 	GestEnum spellType;
 
 protected:
