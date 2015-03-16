@@ -8,8 +8,9 @@ AMagUsBuffDefFire::AMagUsBuffDefFire(const FObjectInitializer& ObjectInitializer
 {
 	//	ProjectileMovement = ObjectInitializer.CreateDefaultSubobject<UProjectileMovementComponent>(this, TEXT("ProjectileComp"));
 
-	// Die after 3 seconds by default
+	// Die after 10 seconds by default
 	InitialLifeSpan = 10.0f;
+	Type = EManaType::FIRE;
 }
 
 

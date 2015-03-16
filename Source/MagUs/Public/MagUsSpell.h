@@ -22,6 +22,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
 	float ManaCost;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SpellManagement)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
 	EManaType Type;
 };

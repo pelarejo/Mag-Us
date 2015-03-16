@@ -7,10 +7,10 @@
 #include "Engine.h"
 
 
-AMagUsIceball::AMagUsIceball(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+AMagUsIceball::AMagUsIceball(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
 {
-	// Iceball's damage
-	SetDamage(20000000000.0f);
+	Type = EManaType::ICE;
 }
 
 

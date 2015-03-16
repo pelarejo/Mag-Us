@@ -7,8 +7,10 @@
 #include "Engine.h"
 
 
-AMagUsFireball::AMagUsFireball(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+AMagUsFireball::AMagUsFireball(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
 {
+	Type = EManaType::FIRE;
 }
 
 

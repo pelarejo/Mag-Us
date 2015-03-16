@@ -4,10 +4,10 @@
 #include "MagUsWindball.h"
 
 
-AMagUsWindball::AMagUsWindball(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+AMagUsWindball::AMagUsWindball(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
 {
-	// Windball's damage
-	SetDamage(20000000000.0f);
+	Type = EManaType::WIND;
 }
 
 
