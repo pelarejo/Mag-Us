@@ -64,10 +64,15 @@ protected:
 
 	bool		bSignX; // true = negative
 
+	bool		bShieldMode;
+
 	/** Fires a projectile. */
+	void ShieldOrFire();
 	void OnFire();
 
 	/** Launch a shield. */
+	void ShieldModeOn();
+	void ShieldModeOff();
 	void LaunchShield();
 
 	/** Locks on enemy */
