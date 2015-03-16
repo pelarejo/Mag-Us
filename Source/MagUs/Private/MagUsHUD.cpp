@@ -61,6 +61,7 @@ void AMagUsHUD::Tick(float DeltaSeconds) {
 	if (GEngine != NULL && GEngine->IsStereoscopic3D() != bDraw3DHUD) {
 		bDraw3DHUD = GEngine->IsStereoscopic3D();
 		(bDraw3DHUD == true) ? ManaWidget->HideWidget() : ManaWidget->ShowWidget();
+		(bDraw3DHUD == true) ? VrCrosshair->ShowCross() : VrCrosshair->HideCross();
 	}
 }
 
