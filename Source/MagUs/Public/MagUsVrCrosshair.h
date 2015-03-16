@@ -20,6 +20,8 @@ public:
 		void SetPosition(const FVector& Position);
 		void SetScale(const FVector& Scale);
 		void SetTexture(class UTexture2D* CrosshairTex);
+		void HideCross();
+		void ShowCross();
 
 private:
 	class UTexture2D* CrosshairTex;

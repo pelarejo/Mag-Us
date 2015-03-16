@@ -142,6 +142,10 @@ void AMagUsPlayerCharacter::OnFire()
 
 		// SpawnOffset is in camera space, so transform it to world space before offsetting from the character location to find the final spawn position
 		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileOffset);
+		if (LockedActor == NULL && GEngine->IsStereoscopic3D()) {
+			AMagUsPlayerController* PC = Cast<AMagUsPlayerController>(GetController());
+			SpawnRotation = PC->PlayerCameraManager->GetActorForwardVector().Rotation();
+		}
 
 		// Set the instigator of the spell
 		FActorSpawnParameters SpawnParams;
