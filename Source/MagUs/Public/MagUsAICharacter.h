@@ -20,8 +20,14 @@ public:
 
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SpellManagement)
+	GestEnum spellType;
 protected:
 	/** Fires a projectile. */
 	UFUNCTION(BlueprintCallable, Category = SpellManagement)
 	void OnFire();
+
+	UFUNCTION(BlueprintCallable, Category = "SpellManagement")
+	void setSpellType(int32 newValue);
+
 };
