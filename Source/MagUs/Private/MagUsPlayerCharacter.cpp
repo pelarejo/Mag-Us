@@ -52,6 +52,7 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 
 	LockedActor = NULL;
 	bLockedPressed = false;
+	bShieldMode = false;
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
@@ -79,8 +80,9 @@ void AMagUsPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Inp
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	InputComponent->BindAction("Fire", IE_Pressed, this, &AMagUsPlayerCharacter::OnFire);
-	InputComponent->BindAction("Shield", IE_Pressed, this, &AMagUsPlayerCharacter::LaunchShield);
+	InputComponent->BindAction("Fire", IE_Pressed, this, &AMagUsPlayerCharacter::ShieldOrFire);
+	InputComponent->BindAction("Shield", IE_Pressed, this, &AMagUsPlayerCharacter::ShieldModeOn);
+	InputComponent->BindAction("Shield", IE_Released, this, &AMagUsPlayerCharacter::ShieldModeOff);
 
 	InputComponent->BindAction("Lock", IE_Pressed, this, &AMagUsPlayerCharacter::LockPressed);
 	InputComponent->BindAction("Lock", IE_Released, this, &AMagUsPlayerCharacter::LockReleased);
@@ -108,6 +110,15 @@ void AMagUsPlayerCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent 
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Player: " + FString::SanitizeFloat(DamageTaken) + " - " + FString::SanitizeFloat(Defense)));
 	}
 	Health -= DamageTaken; // TODO : Calc the DamageTaken
+}
+
+void AMagUsPlayerCharacter::ShieldOrFire() {
+	if (bShieldMode == false) {
+		OnFire();
+	}
+	else {
+		LaunchShield();
+	}
 }
 
 void AMagUsPlayerCharacter::OnFire()
@@ -159,6 +170,14 @@ void AMagUsPlayerCharacter::OnFire()
 			}
 		}
 	}
+}
+
+void AMagUsPlayerCharacter::ShieldModeOn() {
+	bShieldMode = true;
+}
+
+void AMagUsPlayerCharacter::ShieldModeOff() {
+	bShieldMode = false;
 }
 
 void AMagUsPlayerCharacter::LaunchShield()
@@ -515,25 +534,45 @@ GestEnum AMagUsPlayerCharacter::getGestureType(FString gest)
 		if (gest == "Circle")
 		{
 			this->spellType = GestEnum::CIRCLE;
-			this->OnFire();
+			if (bShieldMode == true) {
+				LaunchShield();
+			}
+			else {
+				this->OnFire();
+			}
 			return GestEnum::CIRCLE;
 		}
 		else if (gest == "KeyTap")
 		{
 			this->spellType = GestEnum::KEYTAP;
-			this->OnFire();
+			if (bShieldMode == true) {
+				LaunchShield();
+			}
+			else {
+				this->OnFire();
+			}
 			return GestEnum::KEYTAP;
 		}
 		else if (gest == "Swipe")
 		{
 			this->spellType = GestEnum::SWIPE;
-			this->OnFire();
+			if (bShieldMode == true) {
+				LaunchShield();
+			}
+			else {
+				this->OnFire();
+			}
 			return GestEnum::SWIPE;
 		}
 		else if (gest == "POISON")
 		{
 			this->spellType = GestEnum::LEFTHAND;
-			this->OnFire();
+			if (bShieldMode == true) {
+				LaunchShield();
+			}
+			else {
+				this->OnFire();
+			}
 			return GestEnum::LEFTHAND;
 		}
 		return (GestEnum::NONE);
