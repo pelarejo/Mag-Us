@@ -3,6 +3,7 @@
 
 #include "MagUsSpell.h"
 #include "MagUsBuffOff.h"
+#include "MagUsStatSystem.h"
 #include "MagUsProjectile.generated.h"
 
 UCLASS(config=Game)
@@ -21,7 +22,7 @@ protected:
 
 	/** Damages of the Projectile */
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
-	float Damage;
+	float Damage = 0;
 
 	/** Debuf that will be applied to the hit Character */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagment)

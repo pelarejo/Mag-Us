@@ -15,18 +15,5 @@ class MAGUS_API AMagUsBuffDef : public AMagUsBuff
 
 public:
 	AMagUsBuffDef(const FObjectInitializer& ObjectInitializer);
-	//AMagUsBuffDef();
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkelMeshComponents)
-	//AStaticMeshActor * BuffMesh;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkelMeshComponents)
-	//TSubclassOf<class UStaticMesh> BuffMesh;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkelMeshComponents)
-	//UStaticMesh* BuffMesh;
-	//class UStaticMeshComponent* GetStaticMeshComponent() const;
-
-	
-	
 };

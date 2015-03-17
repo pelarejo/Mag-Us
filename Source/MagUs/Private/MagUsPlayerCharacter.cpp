@@ -36,7 +36,7 @@ AMagUsPlayerCharacter::AMagUsPlayerCharacter(const FObjectInitializer& ObjectIni
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Default offset from the character location for projectiles to spawn
-	ProjectileOffset = FVector(50.0f, 0.0f, 0.0f);
+	ProjectileOffset = FVector(60.0f, 0.0f, 0.0f);
 
 	/*// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("CharacterMesh1P"));
@@ -105,10 +105,6 @@ void AMagUsPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Inp
 
 void AMagUsPlayerCharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
 {
-	if (GEngine)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Player: " + FString::SanitizeFloat(DamageTaken) + " - " + FString::SanitizeFloat(Defense)));
-	}
 	Health -= DamageTaken; // TODO : Calc the DamageTaken
 }
 
@@ -155,7 +151,7 @@ void AMagUsPlayerCharacter::OnFire()
 		// Cast and spawn the spell
 		ManaPool->CastSpell(Spell);
 		AMagUsProjectile* Projectile = World->SpawnActor<AMagUsProjectile>(Spell, SpawnLocation, SpawnRotation, SpawnParams);
-		Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
+		//Projectile->SetDamage(RealAttr->GetDefaultObject<UAttributes>()->Strength); // For now, will be replaced by damage calc in Projectile
 
 		// try and play the sound if specified
 		if (FireSound != NULL)

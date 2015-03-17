@@ -60,7 +60,7 @@ void AMagUsAICharacter::OnFire()
 
 void AMagUsAICharacter::ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
 {
-	this->Health -= DamageTaken; // TODO : Calc DamageTaken
+	this->Health -= DamageTaken;
 
 	if (this->Health < 0)
 	{

@@ -6,8 +6,9 @@
 AMagUsBuffDefIce::AMagUsBuffDefIce(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	// Die after 3 seconds by default
+	// Die after 10 seconds by default
 	InitialLifeSpan = 10.0f;
+	Type = EManaType::ICE;
 }
 
 

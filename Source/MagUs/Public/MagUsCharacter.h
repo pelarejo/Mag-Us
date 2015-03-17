@@ -18,10 +18,10 @@ class AMagUsCharacter : public ACharacter
 public:
 	AMagUsCharacter(const FObjectInitializer& ObjectInitializer);
 
-	void AddDebuff(AMagUsBuffOff* debuff);
-
 	UFUNCTION(BlueprintCallable, Category = SpellManagement)
 	void RemoveDebuff(AMagUsBuffOff* debuff);
+
+	void AddDebuff(AMagUsBuffOff* debuff);
 
 protected:
 	/** Projectile class to spawn */
@@ -35,6 +35,7 @@ protected:
 	/** Array of Debuff in the Character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SpellManagement)
 	TArray<AMagUsBuffOff*> Debuffs;
+
 
 	/** Location for projectiles to spawn */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -51,7 +52,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimSequence* FireAnimation2;
 
-
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	int32 Health = 100;
@@ -59,7 +59,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TSubclassOf<class UAttributes> BaseAttr;
 
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TSubclassOf<class UAttributes> RealAttr;
+
+	/** Current Shield on Character */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
+	AMagUsBuffDef* CurrentShield = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellManagement)
+	EManaType Type = EManaType::NONE;
 };
 

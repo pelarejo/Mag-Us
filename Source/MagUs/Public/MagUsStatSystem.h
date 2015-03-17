@@ -6,6 +6,7 @@
 #include "MagUsStatSystem.generated.h"
 
 class AMagUsCharacter;
+class AMagUsProjectile;
 
 /**
  * Classe implémentant toutes les formules de gameplay
@@ -16,7 +17,8 @@ class MAGUS_API UMagUsStatSystem : public UObject
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION()
-		float CalcDamage(AMagUsCharacter * attacker, AMagUsCharacter * target);
+	UMagUsStatSystem(const FObjectInitializer& ObjectInitializer);
+
+	static float CalcDamage(AMagUsCharacter* Attacker, AMagUsCharacter* Target, AMagUsProjectile* Projectile);
 
 };

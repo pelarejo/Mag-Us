@@ -18,7 +18,7 @@ public:
 	AMagUsBuff(const FObjectInitializer& ObjectInitializer);
 	//AMagUsBuff();
 
-protected:
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	TSubclassOf<class UAttributes> Attr;
 };

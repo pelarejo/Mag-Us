@@ -58,6 +58,9 @@ void AMagUsProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		Character = (Cast<AMagUsPlayerCharacter>(OtherActor));		// Or is it the player
 	if (Character)
 	{
+		// Calc the Damage of the Projectile
+		this->Damage = UMagUsStatSystem::CalcDamage(Cast<AMagUsCharacter>(this->Instigator), Cast<AMagUsCharacter>(Character), this);
+
 		FDamageEvent damageEvent;
 		Character->ApplyDamageMomentum(this->Damage, damageEvent, this->Instigator, this);
 
