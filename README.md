@@ -36,3 +36,6 @@ Follow the [recommended section] (https://docs.unrealengine.com/latest/INT/Progr
 * [Coding Standard] (https://docs.unrealengine.com/latest/INT/Programming/Development/CodingStandard/index.html) for UE4
 * [Useful VR Template] (https://github.com/mitchemmc/UE4FirstPersonVRTemplate)
 * [Best VR practices] (https://docs.unrealengine.com/latest/INT/Platforms/VR/ContentSetup/index.html#vrcharactersettings)
+* 
+###Video
+[Youtube] (https://www.youtube.com/watch?v=5Z69GrbBDiQ)
